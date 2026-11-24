@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black, white } from './materials.js';
-import { extras } from './room.js';
+import { extras, extras3 } from './room.js';
 import { makeTag } from './hud.js';
 import { LEVELS, SLOT_SETS } from '../model/levels.js';
 import { lang } from '../model/i18n.js';
@@ -87,11 +87,11 @@ const plateGroups = SLOT_SETS.map((xs) => {
 // station name tags so every appliance is identifiable
 const TAG_Y = 3.4;
 const TAGS = [
-  [cupSt, 'Copos', TAG_Y, 0], [machineSt, 'Espresso', TAG_Y, 0], [milkSt, 'Leite', TAG_Y, 0],
-  [doughSt, 'Massa', TAG_Y, 0], [ovenSt, 'Forno', TAG_Y, 0],
+  [cupSt, 'Copos', 'Cups', TAG_Y, 0], [machineSt, 'Espresso', 'Espresso', TAG_Y, 0], [milkSt, 'Leite', 'Milk', TAG_Y, 0],
+  [doughSt, 'Massa', 'Dough', TAG_Y, 0], [ovenSt, 'Forno', 'Oven', TAG_Y, 0],
 ];
-for (const [s, txt, y, dx] of TAGS) {
-  const tag = makeTag(lang === 'pt' ? txt : txt.replace('Copos', 'Cups').replace('Leite', 'Milk').replace('Massa', 'Dough').replace('Forno', 'Oven'));
+for (const [s, pt, en, y, dx] of TAGS) {
+  const tag = makeTag(lang === 'pt' ? pt : en);
   tag.position.set(s.pos.x + dx, y, s.pos.z);
   scene.add(tag);
 }
@@ -107,12 +107,25 @@ chocoSt.g.add(chocoSt.cupSlot);
 chocoSt.bar.position.y = 2.8;
 chocoSt.hidden = true;
 const disc = (mat, r, h, y, parent) => cyl(r, r, h, mat, 0, y, 0, parent, 28);
-const choc = M(0x3a1a0c, { roughness: 0.25, emissive: 0x1a0a04 });
-disc(gold, 0.36, 0.1, 1.42, chocoSt.g); disc(choc, 0.3, 0.12, 1.55, chocoSt.g);
-disc(gold, 0.24, 0.08, 1.8, chocoSt.g); disc(choc, 0.2, 0.1, 1.9, chocoSt.g);
-cyl(0.05, 0.05, 0.5, gold, 0, 1.7, 0, chocoSt.g, 10);
-add(new THREE.SphereGeometry(0.12, 14, 12), choc, 0, 2.2, 0, chocoSt.g);
+function buildDipStation(g, toppingColor, toppingEmissive) {
+  const topping = M(toppingColor, { roughness: 0.25, emissive: toppingEmissive });
+  disc(gold, 0.36, 0.1, 1.42, g); disc(topping, 0.3, 0.12, 1.55, g);
+  disc(gold, 0.24, 0.08, 1.8, g); disc(topping, 0.2, 0.1, 1.9, g);
+  cyl(0.05, 0.05, 0.5, gold, 0, 1.7, 0, g, 10);
+  add(new THREE.SphereGeometry(0.12, 14, 12), topping, 0, 2.2, 0, g);
+}
+buildDipStation(chocoSt.g, 0x3a1a0c, 0x1a0a04);
 chocoSt.g.visible = false;
+
+// doce de leite station (level 3 only)
+export const doceLeiteSt = makeStation('doceleite', -5.3, SZ, 0.35, 'Doce de Leite');
+doceLeiteSt.cupSlot = new THREE.Group();
+doceLeiteSt.cupSlot.position.set(0, 1.4, 0.5);
+doceLeiteSt.g.add(doceLeiteSt.cupSlot);
+doceLeiteSt.bar.position.y = 2.8;
+doceLeiteSt.hidden = true;
+buildDipStation(doceLeiteSt.g, 0x8a5a2b, 0x2a1a08);
+doceLeiteSt.g.visible = false;
 
 function dial(parent, x, y, z) {
   const r = cyl(0.17, 0.17, 0.05, gold, x, y, z, parent, 24); r.rotation.x = Math.PI / 2;
@@ -180,11 +193,18 @@ for (const [k, st] of Object.entries(fancyStations)) {
   t.position.set(chocoSt.pos.x, TAG_Y, chocoSt.pos.z);
   extras.add(t);
 }
+{
+  const t = makeTag(lang === 'pt' ? 'Doce de Leite' : 'Dulce de Leche');
+  t.position.set(doceLeiteSt.pos.x, TAG_Y, doceLeiteSt.pos.z);
+  extras3.add(t);
+}
 
 export function applyStationLevel(n) {
   const lv = LEVELS[n - 1];
   plateGroups.forEach((g, i) => (g.visible = i === lv.slots));
-  for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n === 2; }
-  chocoSt.g.visible = n === 2;
-  chocoSt.hidden = n !== 2;
+  for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n >= 2; }
+  chocoSt.g.visible = n >= 2;
+  chocoSt.hidden = n < 2;
+  doceLeiteSt.g.visible = n >= 3;
+  doceLeiteSt.hidden = n < 3;
 }

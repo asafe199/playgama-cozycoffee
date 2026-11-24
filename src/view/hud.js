@@ -31,7 +31,7 @@ export function makeTag(text) {
   c.beginPath(); c.roundRect(4, 4, 312, 82, 24); c.fill();
   c.lineWidth = 5; c.strokeStyle = '#c0392b'; c.stroke();
   c.fillStyle = '#4a3426';
-  c.font = 'bold 40px system-ui, sans-serif';
+  c.font = `bold ${Array.from(text).length > 10 ? 26 : 40}px system-ui, sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillText(text, 160, 48);
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false }));
