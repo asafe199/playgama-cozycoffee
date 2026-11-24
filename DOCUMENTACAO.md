@@ -18,9 +18,19 @@ no prato do cliente antes que a paciência dele acabe.
 |---|---|
 | `index.html` | HUD (pontos, tempo, seletor de nível, corações), tickets de pedidos, mensagens, botões AÇÃO/SOLTAR, overlay |
 | `src/main.js` | Bootstrap: `bridge.initialize()` e só depois importa `game.js` |
-| `src/game.js` | Todo o jogo (cena, estações, receitas, clientes, loop, entrada, i18n) |
+| `src/game.js` | Ponto de entrada fino: só importa `controller/game.js` |
 | `vite.config.js` | Plugin que injeta o SDK do Bridge e `base` relativo |
 | `public/playgama-bridge-config.json` | Config exigida pelo Bridge |
+
+Organização em MVC (`src/`):
+
+| Pasta | Conteúdo |
+|---|---|
+| `model/` | `i18n.js` (idioma/traduções), `recipes.js` (receitas), `levels.js` (temas/níveis/slots), `state.js` (estado de jogo `G`, jogador `P`, nível atual) — sem Three.js de renderização |
+| `view/` | `scene.js` (cena/câmera/renderer/helpers), `materials.js` (materiais compartilhados), `room.js` (cafeteria + tema "Café Noir"), `stations.js` (estações básicas/fancy, chocolate, pratos), `items.js` (meshes dos itens), `people.js` (bonecos), `hud.js` (DOM: pontuação, tickets, balões, etiquetas, guia de receitas) |
+| `controller/` | `input.js` (teclado/clique/botões), `game.js` (interação com estações, spawn de clientes, loop principal, integração com o Bridge) |
+
+Toda a lógica e o visual são os mesmos de antes; é apenas uma reorganização de arquivos para facilitar expandir o jogo.
 
 Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `npx vite build` → `dist/`.
 
