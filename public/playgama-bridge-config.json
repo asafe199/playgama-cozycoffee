@@ -1,0 +1,8 @@
+{
+  "advertisement": {
+    "interstitial": {
+      "placementFallback": "game_over",
+      "placements": [{ "id": "game_over" }]
+    }
+  }
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no" />
+<title>Cozy Café</title>
+<style>
+  html,body{margin:0;height:100%;overflow:hidden;background:#e9dfd2;font-family:system-ui,sans-serif;color:#4a3426;user-select:none;-webkit-user-select:none;touch-action:none}
+  canvas{display:block}
+  .pill{background:#fffaf0e6;padding:6px 14px;border-radius:14px;font-weight:700;box-shadow:0 2px 8px #0002}
+  #top{position:fixed;top:10px;left:10px;display:flex;gap:8px;flex-wrap:wrap}
+  #tickets{position:fixed;top:10px;right:10px;display:flex;flex-direction:column;gap:6px;width:170px}
+  .ticket{background:#fffaf0f0;border-radius:10px;padding:6px 10px;box-shadow:0 2px 8px #0002;border-top:5px solid #c0392b}
+  .ticket i{display:block;height:6px;background:#0002;border-radius:3px;margin-top:5px;overflow:hidden}
+  .ticket u{display:block;height:100%}
+  #msg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);max-width:70vw;text-align:center}
+  #act{position:fixed;bottom:14px;right:14px;width:86px;height:86px;border-radius:50%;border:0;background:#c0392b;color:#fff;font-size:15px;font-weight:800;box-shadow:0 4px 12px #0004}
+  #drop{position:fixed;bottom:14px;right:112px;width:64px;height:64px;border-radius:50%;border:0;background:#6b4a33;color:#fff;font-size:12px;font-weight:800;box-shadow:0 4px 12px #0004}
+  #overlay{position:fixed;inset:0;background:#2a1a1099;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;text-align:center;white-space:pre-line;padding:20px}
+  #overlay h1{margin:0;font-size:40px}
+  #obtn{font-size:20px;font-weight:800;padding:12px 28px;border:0;border-radius:14px;background:#ffd54a;color:#4a3426;cursor:pointer}
+</style>
+</head>
+<body>
+<div id="top">
+  <div class="pill">⭐ <span id="score">0</span></div>
+  <div class="pill">⏱ <span id="time">150</span>s</div>
+  <select class="pill" id="lvl"></select>
+  <div class="pill" id="hearts">❤️❤️❤️</div>
+</div>
+<div id="tickets"></div>
+<div id="msg" class="pill">Pronto?</div>
+<button id="act">AÇÃO</button>
+<button id="drop">SOLTAR</button>
+<div id="overlay"><h1 id="ot"></h1><div id="otxt"></div><button id="obtn"></button></div>
+<script type="module" src="/src/main.js"></script>
+</body>
+</html>
