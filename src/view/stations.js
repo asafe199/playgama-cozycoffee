@@ -72,7 +72,6 @@ ovenSt.bar.position.y = 2.6;
 // serve counter marker
 const serveSt = makeStation('serve', 0, -1.2, 3.4, 'Balcão de entrega');
 box(7.0, 0.02, 0.5, M(0xffd54a, { roughness: 0.6, emissive: 0x332600 }), 0, 1.02, 0, serveSt.g, 0.01);
-serveSt.ring.scale.set(7 / 1.2, 1, 1);
 // plates marking where to leave the order (one per customer spot)
 const plateGroups = SLOT_SETS.map((xs) => {
   const g = new THREE.Group();
