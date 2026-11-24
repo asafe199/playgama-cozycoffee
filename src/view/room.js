@@ -95,10 +95,10 @@ function entranceDoor(x, z) {
   leaf(-half + 0.02, 1);
   leaf(half - 0.02, -1);
   g.position.set(x, 0, z);
-  g.rotation.y = Math.PI / 4;
+  g.rotation.y = Math.PI / 2;
   scene.add(g);
 }
-entranceDoor(5.6, 4.0);
+entranceDoor(5.85, 3.6);
 
 // ---------- level 2 ("Café Noir") decor ----------
 export const extras = new THREE.Group();
