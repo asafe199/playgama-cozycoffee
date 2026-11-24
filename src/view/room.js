@@ -95,6 +95,7 @@ function entranceDoor(x, z) {
   leaf(-half + 0.02, 1);
   leaf(half - 0.02, -1);
   g.position.set(x, 0, z);
+  g.rotation.y = Math.PI / 4;
   scene.add(g);
 }
 entranceDoor(5.6, 4.0);
