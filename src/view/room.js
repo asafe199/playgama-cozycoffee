@@ -132,7 +132,7 @@ scene.add(extras3);
   const cv = document.createElement('canvas');
   cv.width = 512; cv.height = 160;
   const c = cv.getContext('2d');
-  c.font = 'bold 84px system-ui, sans-serif';
+  c.font = 'bold 60px system-ui, sans-serif';
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.shadowColor = '#e0a848'; c.shadowBlur = 28;
   c.fillStyle = '#fff3d6';
