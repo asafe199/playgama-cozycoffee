@@ -306,7 +306,7 @@ function updateStation(s, dt, t, doneAt, burnAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
       s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'doceleite' ? { latte: 'doceleitelatte', croissant: 'doceleitecroissant' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
-      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'doceleite' ? 'Chocolate pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno antes de queimar.');
+      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'doceleite' ? 'Doce de leite pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno antes de queimar.');
     }
   } else if (d.state === 'done' && burnAt) {
     d.t += dt;

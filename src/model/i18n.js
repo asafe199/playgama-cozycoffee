@@ -43,6 +43,7 @@ const EN = {
   'Próximo nível': 'Next level',
   'Adicionando chocolate…': 'Adding chocolate…',
   'Chocolate pronto!': 'Chocolate ready!',
+  'Doce de leite pronto!': 'Dulce de leche ready!',
   'Pronto! Entregue no prato do cliente.': 'Ready! Serve it on the customer plate.',
   'Chocolate precisa de espresso, latte ou croissant na mão.': 'Chocolate needs an espresso, latte or croissant in hand.',
   'Copo devolvido.': 'Cup put back.',
