@@ -53,8 +53,8 @@ shelf(2.6, 3.0);
 box(2.6, 1.1, 0.08, black, 0.2, 3.5, -5.98);
 
 // kitchen counter along back wall
-box(10.4, 1.2, 1.2, woodDark, 0, 0.6, -5.3);
-box(10.6, 0.12, 1.4, top, 0, 1.26, -5.3);
+box(11.0, 1.2, 1.2, woodDark, -0.3, 0.6, -5.3);
+box(11.2, 0.12, 1.4, top, -0.3, 1.26, -5.3);
 // serving counter (front)
 box(7.4, 0.9, 0.7, woodDark, 0, 0.45, -1.2);
 box(7.6, 0.1, 0.9, top, 0, 0.95, -1.2);
@@ -124,6 +124,31 @@ scene.add(extras);
   }
 }
 
+// ---------- level 3 ("Café Dourado") decor ----------
+export const extras3 = new THREE.Group();
+extras3.visible = false;
+scene.add(extras3);
+{
+  const cv = document.createElement('canvas');
+  cv.width = 512; cv.height = 160;
+  const c = cv.getContext('2d');
+  c.font = 'bold 84px system-ui, sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.shadowColor = '#e0a848'; c.shadowBlur = 28;
+  c.fillStyle = '#fff3d6';
+  c.fillText('CAFÉ DOURADO', 256, 82);
+  const sign = noShadow(add(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.3, extras3));
+  sign.rotation.y = Math.PI / 2;
+  // floor lamp
+  cyl(0.04, 0.04, 2.6, black, -5.3, 1.3, 2.9, extras3, 8);
+  noShadow(add(new THREE.SphereGeometry(0.28, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffd27a }), -5.3, 2.7, 2.9, extras3));
+  // bar stools along the left wall
+  for (const z of [-0.2, 0.9]) {
+    cyl(0.28, 0.28, 0.08, M(0xc9952e, { roughness: 0.5 }), -5.0, 0.8, z, extras3, 20);
+    cyl(0.04, 0.04, 0.8, metal, -5.0, 0.4, z, extras3, 8);
+  }
+}
+
 export function applyRoomTheme(n) {
   const th = THEMES[n - 1];
   scene.background.setHex(th.bg);
@@ -134,4 +159,5 @@ export function applyRoomTheme(n) {
   top.color.setHex(th.top);
   rugMat.color.setHex(th.rug);
   extras.visible = n === 2;
+  extras3.visible = n === 3;
 }
