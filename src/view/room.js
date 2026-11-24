@@ -82,8 +82,7 @@ function entranceDoor(x, z) {
   const postH = 2.7, half = 0.62;
   box(0.16, postH, 0.2, woodDark, -half, postH / 2, 0, g);
   box(0.16, postH, 0.2, woodDark, half, postH / 2, 0, g);
-  const arch = add(new THREE.TorusGeometry(half + 0.08, 0.09, 10, 16, Math.PI), woodDark, 0, postH, 0, g);
-  arch.rotation.z = Math.PI;
+  add(new THREE.TorusGeometry(half + 0.08, 0.09, 10, 16, Math.PI), woodDark, 0, postH, 0, g);
   function leaf(hingeX, openSign) {
     const pivot = new THREE.Group();
     pivot.position.set(hingeX, 0, 0);
