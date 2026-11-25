@@ -30,18 +30,6 @@ for (let k = 0; k < 2; k++) {
 }
 add(new THREE.CylinderGeometry(2.4, 2.4, 0.03, 48), rugMat, 0, 0.02, 1.2);
 
-function pendant(x, z, y = 3.4) {
-  const g = new THREE.Group();
-  scene.add(g);
-  noShadow(cyl(0.01, 0.01, WH - y, black, x, (WH + y) / 2, z, g, 6));
-  noShadow(add(new THREE.ConeGeometry(0.4, 0.4, 28, 1, true), M(0x2a2c30, { metalness: 0.6, side: THREE.DoubleSide }), x, y, z, g));
-  noShadow(add(new THREE.SphereGeometry(0.14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffd98a }), x, y - 0.12, z, g));
-  const l = new THREE.PointLight(0xffc880, 6, 7, 2);
-  l.position.set(x, y - 0.2, z);
-  g.add(l);
-  return g;
-}
-const basicPendant = pendant(0, 1.2);
 
 function shelf(x, y) {
   box(3.2, 0.08, 0.45, woodDark, x, y, -5.9);
@@ -208,5 +196,4 @@ export function applyRoomTheme(n) {
   extras.visible = n === 2;
   extras3.visible = n === 3;
   greenPlants.forEach((p) => (p.visible = n !== 3));
-  basicPendant.visible = n !== 3;
 }
