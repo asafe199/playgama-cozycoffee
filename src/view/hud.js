@@ -6,7 +6,7 @@ import { LEVELS } from '../model/levels.js';
 import { profile } from '../model/profile.js';
 
 const $ = (id) => document.getElementById(id);
-export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
+export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), home: $('home'), omenu: $('omenu'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
 
 export function say(t) { hud.msg.textContent = tr(t); }
 
@@ -218,4 +218,12 @@ function refreshMenu() {
 renderBoard();
 menuRoot.append(menuSub, menuTitle, nickLabel, nickInput, playBtn, startBtn, howBtn, rankBtn, board, howBox, backBtn);
 document.body.appendChild(menuRoot);
-export const menu = { root: menuRoot, startBtn: playBtn, nickInput, refresh: refreshMenu };
+hud.omenu.textContent = pt ? '🏠 Menu inicial' : '🏠 Main menu';
+function showMenu() {
+  howBox.style.display = 'none'; backBtn.style.display = 'none'; board.style.display = 'none';
+  nickStep.forEach((e) => (e.style.display = 'none'));
+  showMain(true);
+  refreshMenu();
+  menuRoot.style.display = 'flex';
+}
+export const menu = { show: showMenu, root: menuRoot, startBtn: playBtn, nickInput, refresh: refreshMenu };

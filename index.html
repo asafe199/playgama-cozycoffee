@@ -36,6 +36,7 @@
   #onext{margin:0 0 14px;padding:8px 12px;border-radius:12px;background:#7a1f2e14;font-size:14px;font-weight:600;white-space:pre-line}
   #onext:empty{display:none}
   #obtn{font-size:20px;font-weight:800;padding:13px 34px;border:0;border-radius:16px;background:linear-gradient(180deg,#ffdf6b,#f2b81c);color:#4a3426;cursor:pointer;box-shadow:0 5px 0 #b98511,0 10px 18px #0004;transition:transform .1s}
+  #omenu{display:block;margin:12px auto 0;font-size:15px;font-weight:700;padding:8px 22px;border:2px solid #d4af37;border-radius:14px;background:transparent;color:#7a1f2e;cursor:pointer}
   #obtn:hover{transform:translateY(-2px)}
   #obtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b98511}
   @keyframes pop{from{transform:scale(.6) translateY(30px);opacity:0}to{transform:none;opacity:1}}
@@ -60,6 +61,7 @@
 </head>
 <body>
 <div id="top">
+  <button class="pill" id="home" title="Menu" style="border:0;cursor:pointer;font-size:inherit">🏠</button>
   <div class="pill">⭐ <span id="score">0</span></div>
   <div class="pill">⏱ <span id="time">150</span>s</div>
   <select class="pill" id="lvl"></select>
@@ -69,7 +71,7 @@
 <div id="msg" class="pill">Pronto?</div>
 <button id="act">AÇÃO</button>
 <button id="drop">SOLTAR</button>
-<div id="overlay"><div id="card"><div id="oicon"></div><div id="ostars"></div><h1 id="ot"></h1><div id="otxt"></div><div id="ostats"></div><div id="onext"></div><button id="obtn"></button></div></div>
+<div id="overlay"><div id="card"><div id="oicon"></div><div id="ostars"></div><h1 id="ot"></h1><div id="otxt"></div><div id="ostats"></div><div id="onext"></div><button id="obtn"></button><button id="omenu"></button></div></div>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>

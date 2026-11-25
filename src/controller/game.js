@@ -431,7 +431,15 @@ function dropHeld() {
   say('Item descartado.');
 }
 
-setupInput({ interact, dropHeld, nearest, resetGame });
+function goMenu() {
+  G.mode = 'over';
+  helperBtn.style.display = 'none';
+  hud.overlay.style.display = 'none';
+  keys.clear();
+  P.goal = P.pending = null;
+  menu.show();
+}
+setupInput({ interact, dropHeld, nearest, resetGame, goMenu });
 
 // ---------- loop ----------
 const clock = new THREE.Clock();

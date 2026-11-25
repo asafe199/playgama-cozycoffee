@@ -9,7 +9,7 @@ import { G, P, BOUNDS, SLOTS } from '../model/state.js';
 
 export const keys = new Set();
 
-export function setupInput({ interact, dropHeld, nearest, resetGame }) {
+export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
   addEventListener('keydown', (e) => {
     if (e.repeat) return;
     const k = e.key.toLowerCase();
@@ -21,6 +21,8 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
   addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()));
   hud.act.addEventListener('pointerdown', (e) => { e.stopPropagation(); interact(nearest()); });
   hud.btn.addEventListener('click', resetGame);
+  for (const b of [hud.home, hud.omenu]) b.addEventListener('click', goMenu);
+  hud.home.addEventListener('pointerdown', (e) => e.stopPropagation());
   menu.startBtn.addEventListener('click', () => { setNick(menu.nickInput.value); menu.root.style.display = 'none'; resetGame(); });
   hud.lvl.innerHTML = LEVELS.map((_, i) => `<option value="${i + 1}">${lang === 'pt' ? 'Nível' : 'Level'} ${i + 1}</option>`).join('');
   hud.lvl.value = String(G.level);
