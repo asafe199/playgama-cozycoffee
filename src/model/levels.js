@@ -10,4 +10,4 @@ export const LEVELS = [
   { slots: 2, spawn: [3, 5], patience: 45 },
 ];
 
-export const SLOT_SETS = [[-2.6, 0, 2.6], [-3.2, -1.6, 0, 1.6, 3.2], [-3, -2, -1, 0, 1, 2, 3]];
+export const SLOT_SETS = [[-2.6, 0, 2.6], [-3.2, -1.6, 0, 1.6, 3.2], [-4.5, -3, -1.5, 0, 1.5, 3, 4.5]];
