@@ -59,24 +59,26 @@ box(11.2, 0.12, 1.4, top, -0.3, 1.26, -5.3);
 export const counterBase = box(7.4, 0.9, 0.7, woodDark, 0, 0.45, -1.2);
 export const counterTop = box(7.6, 0.1, 0.9, top, 0, 0.95, -1.2);
 
-function plant(x, z, s = 1, potMat = M(0xe9e4dc, { roughness: 0.9 }), leafMat = green, parent = scene) {
+function plant(x, z, s = 1) {
   const g = new THREE.Group();
-  cyl(0.32, 0.25, 0.5, potMat, 0, 0.25, 0, g, 20);
+  cyl(0.32, 0.25, 0.5, M(0xe9e4dc, { roughness: 0.9 }), 0, 0.25, 0, g, 20);
   for (let i = 0; i < 9; i++) {
     const a = (i / 9) * Math.PI * 2;
-    const leaf = add(new THREE.SphereGeometry(0.3, 10, 8), leafMat, Math.cos(a) * 0.22, 0.95 + (i % 3) * 0.22, Math.sin(a) * 0.22, g);
+    const leaf = add(new THREE.SphereGeometry(0.3, 10, 8), green, Math.cos(a) * 0.22, 0.95 + (i % 3) * 0.22, Math.sin(a) * 0.22, g);
     leaf.scale.set(0.8, 1.7, 0.35);
     leaf.rotation.set(Math.sin(a) * 0.5, -a, Math.cos(a) * 0.5);
   }
   g.position.set(x, 0, z);
   g.scale.setScalar(s);
-  parent.add(g);
+  scene.add(g);
   return g;
 }
-plant(-5.8, -0.2, 1.2);
-plant(5.8, -0.2, 1.1);
-plant(5.3, 4.8, 1.3);
-plant(-5.3, 4.8, 1.2);
+const greenPlants = [
+  plant(-5.8, -0.2, 1.2),
+  plant(5.8, -0.2, 1.1),
+  plant(5.3, 4.8, 1.3),
+  plant(-5.3, 4.8, 1.2),
+];
 
 function entranceDoor(x, z) {
   const g = new THREE.Group();
@@ -125,6 +127,27 @@ scene.add(extras);
   }
 }
 
+function cafeTable(x, z, parent = scene) {
+  const g = new THREE.Group();
+  const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
+  const seat = M(0xe8d5a8, { roughness: 0.5 });
+  cyl(0.55, 0.55, 0.05, top, 0, 1.0, 0, g, 32);
+  cyl(0.06, 0.06, 0.9, gold, 0, 0.55, 0, g, 16);
+  cyl(0.3, 0.3, 0.04, gold, 0, 0.08, 0, g, 24);
+  for (let i = 0; i < 4; i++) {
+    const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
+    const chair = new THREE.Group();
+    box(0.4, 0.06, 0.4, seat, 0, 0.5, 0, chair, 0.02);
+    box(0.4, 0.5, 0.06, seat, 0, 0.75, -0.17, chair, 0.02);
+    for (const lx of [-0.16, 0.16]) for (const lz of [-0.16, 0.16]) cyl(0.025, 0.025, 0.5, gold, lx, 0.25, lz, chair, 8);
+    chair.position.set(Math.cos(a) * 0.85, 0, Math.sin(a) * 0.85);
+    chair.rotation.y = Math.atan2(-chair.position.x, -chair.position.z);
+    g.add(chair);
+  }
+  g.position.set(x, 0, z);
+  parent.add(g);
+}
+
 // ---------- level 3 ("Café Dourado") decor ----------
 export const extras3 = new THREE.Group();
 extras3.visible = false;
@@ -148,11 +171,8 @@ scene.add(extras3);
     cyl(0.28, 0.28, 0.08, M(0xc9952e, { roughness: 0.5 }), -5.0, 0.8, z, extras3, 20);
     cyl(0.04, 0.04, 0.8, metal, -5.0, 0.4, z, extras3, 8);
   }
-  // gold-potted plants flanking the dining area
-  const goldPot = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
-  const wineLeaf = M(0x7a1f2b, { roughness: 0.6 });
-  plant(-4.5, 2.5, 1.1, goldPot, wineLeaf, extras3);
-  plant(4.5, 2.5, 1.1, goldPot, wineLeaf, extras3);
+  // café table for ambient seating
+  cafeTable(-4.0, 2.6, extras3);
 }
 
 export function applyRoomTheme(n) {
@@ -166,4 +186,5 @@ export function applyRoomTheme(n) {
   rugMat.color.setHex(th.rug);
   extras.visible = n === 2;
   extras3.visible = n === 3;
+  greenPlants.forEach((p) => (p.visible = n !== 3));
 }
