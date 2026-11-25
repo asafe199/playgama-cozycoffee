@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import { scene, add, box, cyl, noShadow, M } from './scene.js';
-import { wood, woodDark, metal, black } from './materials.js';
+import { wood, woodDark, metal, black, white } from './materials.js';
 import { THEMES, COUNTER_X } from '../model/levels.js';
 import { tr } from '../model/i18n.js';
+import { makePerson } from './people.js';
+import { skinC, shirtC, hairC, pick } from '../model/state.js';
 
+const diners = [];
 const brick = M(0xb5654a, { roughness: 0.9 });
 const wallMat = M(0xf0e8dc, { roughness: 0.95 });
 const green = M(0x5f9a62, { roughness: 0.8 });
@@ -182,6 +185,34 @@ scene.add(extras);
   cafeTable(-3.4, 4.5, extras);
 }
 
+function addDiner(chair, tableParent) {
+  const p = makePerson(pick(shirtC), pick(skinC), pick(hairC));
+  p.position.y = -0.12;
+  p.scale.setScalar(0.92);
+  const [lL, lR] = p.userData.legs;
+  lL.rotation.x = lR.rotation.x = -1.45;
+  const cup = new THREE.Group();
+  cyl(0.07, 0.055, 0.12, white, 0, -0.72, 0.08, cup, 12);
+  cyl(0.06, 0.06, 0.02, M(0x5a3825), 0, -0.66, 0.08, cup, 12);
+  p.userData.arms[1].add(cup);
+  p.userData.arms[0].rotation.x = -1.0;
+  chair.add(p);
+  diners.push({ p, arm: p.userData.arms[1], root: tableParent, ph: Math.random() * 6.28, rate: 0.5 + Math.random() * 0.4, rest: 2 + Math.random() * 3 });
+}
+
+export function animateDiners(t) {
+  for (const d of diners) {
+    if (!d.root.visible) continue;
+    // cycle: rest on the table, lift the cup, sip with a slight head-back lean, put it down
+    const c = ((t * d.rate + d.ph) % (d.rest + 3));
+    let lift = 0;
+    if (c > d.rest) lift = Math.sin(((c - d.rest) / 3) * Math.PI);
+    d.arm.rotation.x += ((-1.0 - lift * 1.0) - d.arm.rotation.x) * 0.2;
+    d.p.rotation.x += ((-lift * 0.12) - d.p.rotation.x) * 0.2;
+    d.p.rotation.y = Math.sin(t * 0.4 + d.ph) * 0.08;
+  }
+}
+
 function cafeTable(x, z, parent = scene) {
   const g = new THREE.Group();
   const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
@@ -198,6 +229,7 @@ function cafeTable(x, z, parent = scene) {
     chair.position.set(Math.cos(a) * 0.85, 0, Math.sin(a) * 0.85);
     chair.rotation.y = Math.atan2(-chair.position.x, -chair.position.z);
     g.add(chair);
+    if (Math.random() < 0.45) addDiner(chair, parent);
   }
   g.position.set(x, 0, z);
   parent.add(g);

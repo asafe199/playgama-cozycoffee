@@ -7,7 +7,7 @@ import { G, P, BOUNDS, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick }
 import { scene, renderer, camera, setZoom } from '../view/scene.js';
 import { makeItem } from '../view/items.js';
 import { makePerson, animatePerson, dressChef } from '../view/people.js';
-import { applyRoomTheme } from '../view/room.js';
+import { applyRoomTheme, animateDiners } from '../view/room.js';
 import {
   stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, creamSt, waffleSt, ovenGlass, applyStationLevel,
 } from '../view/stations.js';
@@ -503,6 +503,7 @@ function tick() {
     }
     for (const s of Object.values(stations)) s.ring.material.opacity = s === near ? 0.35 + Math.sin(t * 6) * 0.1 : 0;
 
+    animateDiners(t);
     // stations
     updateStation(machineSt, dt, 4);
     updateStation(milkSt, dt, 3);
