@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "npx vite"
+    "dev": "vite",
+    "start": "vite --mode start"
   },
   "keywords": [],
   "author": "",
