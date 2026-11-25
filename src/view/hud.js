@@ -86,10 +86,41 @@ function syncGuide() {
 }
 compact.addEventListener('change', syncGuide);
 syncGuide();
-guideBtn.addEventListener('pointerdown', (e) => {
-  e.stopPropagation();
-  guide.style.display = guide.style.display === 'none' ? 'block' : 'none';
-});
+// tapping the card or the book button opens the recipes in a large centered popup
+const recipeModal = document.createElement('div');
+recipeModal.style.cssText = 'position:fixed;inset:0;z-index:15;display:none;align-items:center;justify-content:center;padding:16px;background:#120a10bb;backdrop-filter:blur(3px)';
+const recipeCard = document.createElement('div');
+recipeCard.style.cssText = 'position:relative;width:min(560px,94vw);max-height:86vh;overflow:auto;box-sizing:border-box;padding:22px 22px 18px;border-radius:22px;background:linear-gradient(180deg,#fff8ea,#f3e2c4);border:3px solid #d4af37;box-shadow:0 24px 60px #0008;color:#4a3426;touch-action:pan-y';
+const recipeClose = document.createElement('button');
+recipeClose.textContent = '✕';
+recipeClose.style.cssText = 'position:absolute;right:10px;top:10px;width:38px;height:38px;border:0;border-radius:50%;font-size:18px;font-weight:800;cursor:pointer;background:#7a1f2e;color:#fff';
+recipeModal.append(recipeCard);
+recipeCard.append(recipeClose);
+const recipeBody = document.createElement('div');
+recipeCard.append(recipeBody);
+document.body.appendChild(recipeModal);
+let pausedBefore = false;
+function openRecipes() {
+  const lines = guide.innerHTML.split('<br>');
+  const title = lines.shift().replace(/<\/?b>/g, '');
+  recipeBody.innerHTML = `<div style="font:800 28px Georgia,serif;color:#7a1f2e;margin:0 40px 12px 0">📖 ${title}</div>` + lines.map((l) => {
+    const i = l.indexOf(':');
+    const name = i > 0 ? l.slice(0, i) : l, steps = i > 0 ? l.slice(i + 1).trim() : '';
+    return `<div style="padding:9px 12px;margin-bottom:7px;border-radius:12px;background:#fff;border:2px solid #ead7b3"><b style="font-size:clamp(17px,4.6vw,22px);color:#7a1f2e">${name}</b>${steps ? `<div style="font-size:clamp(15px,4vw,19px);margin-top:2px">${steps}</div>` : ''}</div>`;
+  }).join('');
+  pausedBefore = G.paused;
+  G.paused = true;
+  recipeModal.style.display = 'flex';
+}
+function closeRecipes() {
+  recipeModal.style.display = 'none';
+  G.paused = pausedBefore;
+}
+guide.style.cursor = 'pointer';
+for (const el of [guide, guideBtn]) el.addEventListener('pointerdown', (e) => { e.stopPropagation(); openRecipes(); });
+recipeClose.addEventListener('pointerdown', (e) => { e.stopPropagation(); closeRecipes(); });
+recipeModal.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (e.target === recipeModal) closeRecipes(); });
+addEventListener('keydown', (e) => { if (e.key === 'Escape' && recipeModal.style.display === 'flex') closeRecipes(); });
 
 export function refreshGuide() {
   const l2 = level >= 2, l3 = level >= 3, l4 = level >= 4, l5 = level >= 5;
