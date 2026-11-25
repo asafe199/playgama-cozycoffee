@@ -3,6 +3,7 @@ import { lang, tr } from '../model/i18n.js';
 import { level, G } from '../model/state.js';
 import { RECIPES } from '../model/recipes.js';
 import { LEVELS } from '../model/levels.js';
+import { profile } from '../model/profile.js';
 
 const $ = (id) => document.getElementById(id);
 export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
@@ -122,6 +123,9 @@ startBtn.style.cssText = btnCss;
 const howBtn = document.createElement('button');
 howBtn.textContent = pt ? 'Instruções' : 'Instructions';
 howBtn.style.cssText = btnCss + ';background:#f3e9ff;box-shadow:0 4px 0 #9b86c9';
+const rankBtn = document.createElement('button');
+rankBtn.textContent = pt ? '🏆 Ranking' : '🏆 Rank';
+rankBtn.style.cssText = btnCss + ';background:#ffe9a8;box-shadow:0 4px 0 #c79a2a';
 const howBox = document.createElement('div');
 howBox.style.cssText = 'display:none;max-width:min(560px,92vw);max-height:62vh;overflow:auto;text-align:left;background:#ffffff14;border:1px solid #ffffff30;border-radius:14px;padding:14px 18px;font-size:15px;line-height:1.55;touch-action:pan-y';
 howBox.innerHTML = pt
@@ -130,14 +134,41 @@ howBox.innerHTML = pt
 const backBtn = document.createElement('button');
 backBtn.textContent = pt ? 'Voltar' : 'Back';
 backBtn.style.cssText = btnCss + ';display:none;background:#f3e9ff;box-shadow:0 4px 0 #9b86c9';
+const showMain = (on) => [nickInput, startBtn, howBtn, rankBtn].forEach((b) => (b.style.display = on ? 'block' : 'none'));
 howBtn.addEventListener('click', () => {
   howBox.style.display = 'block'; backBtn.style.display = 'block';
-  startBtn.style.display = howBtn.style.display = 'none';
+  showMain(false);
+});
+rankBtn.addEventListener('click', () => {
+  renderBoard();
+  board.style.display = 'block'; backBtn.style.display = 'block';
+  showMain(false);
 });
 backBtn.addEventListener('click', () => {
-  howBox.style.display = 'none'; backBtn.style.display = 'none';
-  startBtn.style.display = howBtn.style.display = 'block';
+  howBox.style.display = 'none'; backBtn.style.display = 'none'; board.style.display = 'none';
+  showMain(true);
 });
-menuRoot.append(menuSub, menuTitle, startBtn, howBtn, howBox, backBtn);
+const nickInput = document.createElement('input');
+nickInput.maxLength = 12;
+nickInput.placeholder = pt ? 'Seu apelido' : 'Your nickname';
+nickInput.autocomplete = 'off';
+nickInput.style.cssText = 'font-size:18px;font-weight:700;text-align:center;padding:11px 12px;width:min(260px,70vw);box-sizing:border-box;border-radius:14px;border:2px solid #ffd97a88;background:#ffffff1c;color:#fff;outline:none';
+nickInput.addEventListener('keydown', (e) => e.stopPropagation());
+nickInput.addEventListener('keyup', (e) => e.stopPropagation());
+const board = document.createElement('div');
+board.style.cssText = 'display:none;width:min(320px,86vw);box-sizing:border-box;padding:10px 14px;border-radius:14px;background:#ffffff14;border:1px solid #ffffff30;text-align:left;font-size:15px';
+const MEDALS = ['🥇', '🥈', '🥉', '4.', '5.'];
+function renderBoard() {
+  const rows = profile.top.length
+    ? profile.top.map((e, i) => `<div style="display:flex;justify-content:space-between;gap:10px;padding:2px 0;${i === 0 ? 'color:#ffd97a;font-weight:800' : ''}"><span>${MEDALS[i]} ${e.n.replace(/[<>&]/g, '')}</span><b>${e.s}</b></div>`).join('')
+    : `<div style="opacity:.7;text-align:center">${pt ? 'Ninguém pontuou ainda' : 'No scores yet'}</div>`;
+  board.innerHTML = `<div style="text-align:center;font-weight:800;color:#ffd97a;margin-bottom:4px">🏆 ${pt ? 'Maiores pontuações' : 'High scores'}</div>${rows}`;
+}
+function refreshMenu() {
+  nickInput.value = profile.nick;
+  renderBoard();
+}
+renderBoard();
+menuRoot.append(menuSub, menuTitle, nickInput, startBtn, howBtn, rankBtn, board, howBox, backBtn);
 document.body.appendChild(menuRoot);
-export const menu = { root: menuRoot, startBtn };
+export const menu = { root: menuRoot, startBtn, nickInput, refresh: refreshMenu };

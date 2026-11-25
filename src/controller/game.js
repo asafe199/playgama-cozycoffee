@@ -11,7 +11,8 @@ import { applyRoomTheme, animateDiners } from '../view/room.js';
 import {
   stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, creamSt, waffleSt, ovenGlass, applyStationLevel,
 } from '../view/stations.js';
-import { hud, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
+import { profile, loadProfile, submitScore } from '../model/profile.js';
+import { hud, menu, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
 
 // ---------- player ----------
@@ -167,6 +168,7 @@ function endGame(win, reason) {
   G.mode = 'over';
   helperBtn.style.display = 'none';
   bridge.platform.sendMessage(win ? 'level_completed' : 'level_failed');
+  submitScore(profile.nick || (lang === 'pt' ? 'Jogador' : 'Player'), G.score);
   const isBest = G.score > G.best;
   if (isBest) {
     G.best = G.score;
@@ -598,6 +600,8 @@ bridge.storage
     hud.lvl.value = String(G.level);
   })
   .catch(() => {})
+  .then(loadProfile)
+  .then(() => menu.refresh())
   .then(tick);
 
 if (new URLSearchParams(location.search).has('debug')) window.__cafe = { applyLevel, G, P, stations, interact, resetGame, keys, setHeld, spawnCustomer, helper };

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import { camera, renderer, scene, zoomBy, panBy } from '../view/scene.js';
 import { hud, menu } from '../view/hud.js';
+import { setNick } from '../model/profile.js';
 import { stations } from '../view/stations.js';
 import { LEVELS } from '../model/levels.js';
 import { lang } from '../model/i18n.js';
@@ -20,7 +21,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
   addEventListener('keyup', (e) => keys.delete(e.key.toLowerCase()));
   hud.act.addEventListener('pointerdown', (e) => { e.stopPropagation(); interact(nearest()); });
   hud.btn.addEventListener('click', resetGame);
-  menu.startBtn.addEventListener('click', () => { menu.root.style.display = 'none'; resetGame(); });
+  menu.startBtn.addEventListener('click', () => { setNick(menu.nickInput.value); menu.root.style.display = 'none'; resetGame(); });
   hud.lvl.innerHTML = LEVELS.map((_, i) => `<option value="${i + 1}">${lang === 'pt' ? 'Nível' : 'Level'} ${i + 1}</option>`).join('');
   hud.lvl.value = String(G.level);
   hud.lvl.addEventListener('change', () => {
