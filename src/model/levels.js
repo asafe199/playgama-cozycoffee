@@ -11,7 +11,7 @@ export const LEVELS = [
   { slots: 1, spawn: [4, 7], patience: 50, hearts: 3 },
   { slots: 2, spawn: [3, 5], patience: 45, hearts: 4 },
   { slots: 3, spawn: [3.5, 6], patience: 42, hearts: 4 },
-  { slots: 4, spawn: [4.3, 6.8], patience: 41, hearts: 5 },
+  { slots: 4, spawn: [5.3, 7.8], patience: 41, hearts: 5 },
 ];
 
 export const SLOT_SETS = [[-2.6, 0, 2.6], [-3.2, -1.6, 0, 1.6, 3.2], [-4.5, -3, -1.5, 0, 1.5, 3, 4.5], [-4.9, -3.5, -2.1, -0.7, 0.7, 2.1, 3.5, 4.9].map((x) => x + 1.5), [-5.85, -4.55, -3.25, -1.95, -0.65, 0.65, 1.95, 3.25, 4.55, 5.85].map((x) => x + 2.45)];
