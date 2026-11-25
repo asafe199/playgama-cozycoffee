@@ -1,13 +1,19 @@
 import bridge from '@playgama/bridge';
+import { ES, FR } from './locales.js';
 
+export const LANGS = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['fr', 'Français']];
 const saved = (() => { try { return localStorage.getItem('cafe_lang'); } catch { return null; } })();
-export const lang = saved === 'pt' || saved === 'en' ? saved : String(bridge.platform?.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+const platform = String(bridge.platform?.language || 'en').toLowerCase().slice(0, 2);
+export const lang = LANGS.some(([c]) => c === saved) ? saved : LANGS.some(([c]) => c === platform) ? platform : 'en';
 
 // the whole UI is built from `lang` at load time, so switching saves the choice and reloads
 export function setLang(l) {
   try { localStorage.setItem('cafe_lang', l); } catch { /* storage unavailable */ }
   location.reload();
 }
+
+// inline translations: L({ pt, en, es, fr }); missing languages fall back to English
+export const L = (o) => o[lang] ?? o.en;
 
 const EN = {
   'Café Noir': 'Noir Café',
@@ -68,4 +74,5 @@ const EN = {
   'Item devolvido.': 'Item put back.',
 };
 
-export const tr = (s) => (lang === 'en' && EN[s]) || s;
+const DICT = { en: EN, es: ES, fr: FR };
+export const tr = (s) => (DICT[lang] && (DICT[lang][s] || EN[s])) || s;

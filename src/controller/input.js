@@ -4,8 +4,10 @@ import { hud, menu } from '../view/hud.js';
 import { setNick } from '../model/profile.js';
 import { stations } from '../view/stations.js';
 import { LEVELS } from '../model/levels.js';
-import { lang } from '../model/i18n.js';
+import { L } from '../model/i18n.js';
 import { G, P, BOUNDS, SLOTS } from '../model/state.js';
+
+const LEVEL_WORD = L({ pt: 'Nível', en: 'Level', es: 'Nivel', fr: 'Niveau' });
 
 export const keys = new Set();
 
@@ -26,7 +28,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
   menu.startBtn.addEventListener('click', () => { setNick(menu.nickInput.value); menu.root.style.display = 'none'; resetGame(); });
   // the level picker is a test aid: only in `npm run dev`; hidden with `npm start` and in production builds
   if (import.meta.env.MODE !== 'development') hud.lvl.style.display = 'none';
-  hud.lvl.innerHTML = LEVELS.map((_, i) => `<option value="${i + 1}">${lang === 'pt' ? 'Nível' : 'Level'} ${i + 1}</option>`).join('');
+  hud.lvl.innerHTML = LEVELS.map((_, i) => `<option value="${i + 1}">${LEVEL_WORD} ${i + 1}</option>`).join('');
   hud.lvl.value = String(G.level);
   hud.lvl.addEventListener('change', () => {
     G.level = Number(hud.lvl.value);

@@ -1,6 +1,7 @@
 import * as THREE from 'three';
 import bridge from '@playgama/bridge';
-import { lang, tr } from '../model/i18n.js';
+import { tr, L } from '../model/i18n.js';
+import { ITEM_NAMES } from '../model/names.js';
 import { RECIPES, ORDER_POOLS } from '../model/recipes.js';
 import { LEVELS, SLOT_SETS } from '../model/levels.js';
 import { G, P, BOUNDS, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick } from '../model/state.js';
@@ -120,10 +121,8 @@ function setHeld(type) {
     P.heldMesh = makeItem(type);
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
-    const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel', creamlatte: 'Latte com Chantilly', creamwaffle: 'Waffle com Chantilly', creammocha: 'Mocha com Chantilly' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso', creamlatte: 'Cream Latte', creamwaffle: 'Waffle with Cream', creammocha: 'Cream Mocha' };
-    const tag = makeTag(names[type]);
+    const names = ITEM_NAMES[type];
+    const tag = makeTag(L(names));
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
     P.heldMesh.add(tag);
@@ -169,7 +168,7 @@ function endGame(win, reason) {
   G.mode = 'over';
   helperBtn.style.display = 'none';
   bridge.platform.sendMessage(win ? 'level_completed' : 'level_failed');
-  submitScore(profile.nick || (lang === 'pt' ? 'Jogador' : 'Player'), G.score);
+  submitScore(profile.nick || L({ pt: 'Jogador', en: 'Player', es: 'Jugador', fr: 'Joueur' }), G.score);
   const isBest = G.score > G.best;
   if (isBest) {
     G.best = G.score;
@@ -184,16 +183,26 @@ function endGame(win, reason) {
   hud.stars.innerHTML = win ? [0, 1, 2].map((i) => `<span class="${i < earned ? '' : 'off'}" style="animation-delay:${0.25 + i * 0.18}s">⭐</span>`).join('') : '';
   hud.text.textContent = reason;
   const tile = (v, l, cls = '') => `<div class="stat ${cls}"><b>${v}</b><small>${l}</small></div>`;
-  hud.stats.innerHTML = lang === 'pt'
-    ? tile(G.score, 'Pontos') + tile(G.served, 'Pedidos') + tile(G.best, isBest ? 'Novo recorde!' : 'Recorde', isBest ? 'best' : '')
-    : tile(G.score, 'Score') + tile(G.served, 'Orders') + tile(G.best, isBest ? 'New best!' : 'Best', isBest ? 'best' : '');
+  const stat = L({
+    pt: { score: 'Pontos', orders: 'Pedidos', total: 'Pontos totais', best: 'Recorde', newBest: 'Novo recorde!' },
+    en: { score: 'Score', orders: 'Orders', total: 'Total score', best: 'Best', newBest: 'New best!' },
+    es: { score: 'Puntos', orders: 'Pedidos', total: 'Puntos totales', best: 'Récord', newBest: '¡Nuevo récord!' },
+    fr: { score: 'Points', orders: 'Commandes', total: 'Points totaux', best: 'Record', newBest: 'Nouveau record !' },
+  });
+  hud.stats.innerHTML = tile(G.score, stat.score) + tile(G.served, stat.orders) + tile(G.best, isBest ? stat.newBest : stat.best, isBest ? 'best' : '');
   hud.next.textContent = '';
   hud.btn.textContent = tr('Jogar de novo');
   if (win && G.level < LEVELS.length) {
     G.level++;
     G.maxLevel = Math.max(G.maxLevel, G.level);
     bridge.storage.set(['max_level'], [String(G.maxLevel)]).catch(() => {});
-    hud.next.textContent = lang === 'pt' ? `Nível ${G.level}: nova cafeteria com ${SLOT_SETS[LEVELS[G.level - 1].slots].length} clientes ao mesmo tempo!` : `Level ${G.level}: a new café with ${SLOT_SETS[LEVELS[G.level - 1].slots].length} customers at once!`;
+    const n = SLOT_SETS[LEVELS[G.level - 1].slots].length;
+    hud.next.textContent = L({
+      pt: `Nível ${G.level}: nova cafeteria com ${n} clientes ao mesmo tempo!`,
+      en: `Level ${G.level}: a new café with ${n} customers at once!`,
+      es: `Nivel ${G.level}: ¡una nueva cafetería con ${n} clientes a la vez!`,
+      fr: `Niveau ${G.level} : un nouveau café avec ${n} clients à la fois !`,
+    });
     hud.btn.textContent = tr('Próximo nível');
   }
   if (win) {
@@ -204,12 +213,10 @@ function endGame(win, reason) {
     G.level = 1;
     hud.card.className = 'win';
     hud.icon.textContent = '👑';
-    hud.title.textContent = lang === 'pt' ? 'Parabéns, você zerou o jogo!' : 'Congratulations, you beat the game!';
-    hud.text.textContent = lang === 'pt' ? 'Você conquistou o Café Imperial! Este é o seu resultado final.' : 'You conquered the Imperial Café! Here is your final result.';
-    hud.stats.innerHTML = lang === 'pt'
-      ? tile(G.total, 'Pontos totais') + tile(G.totalServed, 'Pedidos') + tile(G.best, 'Recorde', 'best')
-      : tile(G.total, 'Total score') + tile(G.totalServed, 'Orders') + tile(G.best, 'Best', 'best');
-    hud.next.textContent = lang === 'pt' ? 'Todos os 5 níveis concluídos!' : 'All 5 levels completed!';
+    hud.title.textContent = L({ pt: 'Parabéns, você zerou o jogo!', en: 'Congratulations, you beat the game!', es: '¡Felicidades, has completado el juego!', fr: 'Félicitations, vous avez fini le jeu !' });
+    hud.text.textContent = L({ pt: 'Você conquistou o Café Imperial! Este é o seu resultado final.', en: 'You conquered the Imperial Café! Here is your final result.', es: '¡Has conquistado el Café Imperial! Este es tu resultado final.', fr: 'Vous avez conquis le Café Impérial ! Voici votre résultat final.' });
+    hud.stats.innerHTML = tile(G.total, stat.total) + tile(G.totalServed, stat.orders) + tile(G.best, stat.best, 'best');
+    hud.next.textContent = L({ pt: 'Todos os 5 níveis concluídos!', en: 'All 5 levels completed!', es: '¡Los 5 niveles completados!', fr: 'Les 5 niveaux sont terminés !' });
     hud.btn.textContent = tr('Jogar de novo');
   }
   if (bridge.advertisement.isInterstitialSupported) bridge.advertisement.showInterstitial('game_over');
@@ -425,7 +432,7 @@ function interact(s) {
         target.bubble.visible = false;
         target.xBubble.visible = true;
         target.wrongFlash = 1.2;
-        if (G.hearts <= 0) endGame(false, lang === 'pt' ? 'Você errou pedidos demais.' : 'Too many wrong orders.');
+        if (G.hearts <= 0) endGame(false, L({ pt: 'Você errou pedidos demais.', en: 'Too many wrong orders.', es: 'Demasiados pedidos equivocados.', fr: 'Trop de mauvaises commandes.' }));
         break;
       }
       const bonus = Math.round((target.patience / target.max) * 10);
@@ -435,7 +442,7 @@ function interact(s) {
       target.state = 'leaving';
       target.bubble.visible = false;
       target.xBubble.visible = false;
-      say(lang === 'pt' ? `Entregue! +${10 + bonus} pontos` : `Served! +${10 + bonus} points`);
+      say(L({ pt: `Entregue! +${10 + bonus} pontos`, en: `Served! +${10 + bonus} points`, es: `¡Servido! +${10 + bonus} puntos`, fr: `Servi ! +${10 + bonus} points` }));
       break;
     }
   }

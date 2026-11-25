@@ -4,7 +4,7 @@ import { wood, woodDark, metal, black, white } from './materials.js';
 import { makeTag } from './hud.js';
 import { counterBase, counterTop } from './room.js';
 import { LEVELS, SLOT_SETS, COUNTER_X } from '../model/levels.js';
-import { lang } from '../model/i18n.js';
+import { L } from '../model/i18n.js';
 
 const SZ = -5.3;
 
@@ -88,11 +88,14 @@ const plateGroups = SLOT_SETS.map((xs) => {
 // station name tags so every appliance is identifiable
 const TAG_Y = 3.4;
 const TAGS = [
-  [cupSt, 'Copos', 'Cups', TAG_Y, 0], [machineSt, 'Espresso', 'Espresso', TAG_Y, 0], [milkSt, 'Leite', 'Milk', TAG_Y, 0],
-  [doughSt, 'Massa', 'Dough', TAG_Y, 0], [ovenSt, 'Forno', 'Oven', TAG_Y, 0],
+  [cupSt, { pt: 'Copos', en: 'Cups', es: 'Vasos', fr: 'Tasses' }, TAG_Y, 0],
+  [machineSt, { pt: 'Espresso', en: 'Espresso', es: 'Espresso', fr: 'Espresso' }, TAG_Y, 0],
+  [milkSt, { pt: 'Leite', en: 'Milk', es: 'Leche', fr: 'Lait' }, TAG_Y, 0],
+  [doughSt, { pt: 'Massa', en: 'Dough', es: 'Masa', fr: 'Pâte' }, TAG_Y, 0],
+  [ovenSt, { pt: 'Forno', en: 'Oven', es: 'Horno', fr: 'Four' }, TAG_Y, 0],
 ];
-for (const [s, pt, en, y, dx] of TAGS) {
-  const tag = makeTag(lang === 'pt' ? pt : en);
+for (const [s, names, y, dx] of TAGS) {
+  const tag = makeTag(L(names));
   tag.position.set(s.pos.x + dx, y, s.pos.z);
   scene.add(tag);
 }
@@ -293,17 +296,17 @@ for (const [k, st] of Object.entries(fancyStations)) {
   st.deluxe.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   st.g.add(st.deluxe);
 }
-const chocoTag = makeTag(lang === 'pt' ? 'Chocolate' : 'Chocolate');
+const chocoTag = makeTag('Chocolate');
 chocoTag.position.set(chocoSt.pos.x, TAG_Y, chocoSt.pos.z);
 scene.add(chocoTag);
 
-const honeyTag = makeTag(lang === 'pt' ? 'Mel' : 'Honey');
+const honeyTag = makeTag(L({ pt: 'Mel', en: 'Honey', es: 'Miel', fr: 'Miel' }));
 honeyTag.position.set(honeySt.pos.x, TAG_Y, honeySt.pos.z);
 scene.add(honeyTag);
-const creamTag = makeTag('Chantilly');
+const creamTag = makeTag(L({ pt: 'Chantilly', en: 'Cream', es: 'Nata', fr: 'Chantilly' }));
 creamTag.position.set(creamSt.pos.x, TAG_Y, creamSt.pos.z);
 scene.add(creamTag);
-const waffleTag = makeTag(lang === 'pt' ? 'Waffle' : 'Waffle');
+const waffleTag = makeTag(L({ pt: 'Waffle', en: 'Waffle', es: 'Waffle', fr: 'Gaufre' }));
 waffleTag.position.set(waffleSt.pos.x, 2.2, waffleSt.pos.z);
 scene.add(waffleTag);
 
