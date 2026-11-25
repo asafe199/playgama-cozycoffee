@@ -3,7 +3,7 @@ import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black, white } from './materials.js';
 import { makeTag } from './hud.js';
 import { counterBase, counterTop } from './room.js';
-import { LEVELS, SLOT_SETS } from '../model/levels.js';
+import { LEVELS, SLOT_SETS, COUNTER_X } from '../model/levels.js';
 import { lang } from '../model/i18n.js';
 
 const SZ = -5.3;
@@ -150,6 +150,16 @@ waffleSt.bar.position.y = 1.9;
 waffleSt.hidden = true;
 waffleSt.g.visible = false;
 
+// whipped cream station (level 5 only)
+export const creamSt = makeStation('cream', 10.2, SZ, 0.35, 'Chantilly');
+creamSt.cupSlot = new THREE.Group();
+creamSt.cupSlot.position.set(0, 1.4, 0.5);
+creamSt.g.add(creamSt.cupSlot);
+creamSt.bar.position.y = 2.8;
+creamSt.hidden = true;
+buildDipStation(creamSt.g, 0xfff4ea, 0x6a6258);
+creamSt.g.visible = false;
+
 function dial(parent, x, y, z) {
   const r = cyl(0.17, 0.17, 0.05, gold, x, y, z, parent, 24); r.rotation.x = Math.PI / 2;
   const f = cyl(0.13, 0.13, 0.06, white, x, y, z + 0.005, parent, 24); f.rotation.x = Math.PI / 2;
@@ -290,22 +300,39 @@ scene.add(chocoTag);
 const honeyTag = makeTag(lang === 'pt' ? 'Mel' : 'Honey');
 honeyTag.position.set(honeySt.pos.x, TAG_Y, honeySt.pos.z);
 scene.add(honeyTag);
+const creamTag = makeTag('Chantilly');
+creamTag.position.set(creamSt.pos.x, TAG_Y, creamSt.pos.z);
+scene.add(creamTag);
 const waffleTag = makeTag(lang === 'pt' ? 'Waffle' : 'Waffle');
 waffleTag.position.set(waffleSt.pos.x, 2.2, waffleSt.pos.z);
 scene.add(waffleTag);
 
 // level 4 spreads the kitchen over the wider counter
 const L4_X = { cups: -5.3, espresso: -3.4, milk: -1.5, dough: 0.4, oven: 2.4, choco: 4.5, honey: 6.4, waffle: 8.3 };
+const L5_X = { ...L4_X, cream: 10.2 };
 const baseX = {};
-for (const k of Object.keys(L4_X)) baseX[k] = stations[k].pos.x;
+for (const k of Object.keys(L5_X)) baseX[k] = stations[k].pos.x;
 const tagsByKey = {};
 scene.children.filter((o) => o.isSprite).forEach((o) => {
-  for (const k of Object.keys(L4_X)) if (Math.abs(o.position.x - baseX[k]) < 0.01 && Math.abs(o.position.z - stations[k].pos.z) < 0.01) (tagsByKey[k] ||= []).push(o);
+  for (const k of Object.keys(L5_X)) if (Math.abs(o.position.x - baseX[k]) < 0.01 && Math.abs(o.position.z - stations[k].pos.z) < 0.01) (tagsByKey[k] ||= []).push(o);
 });
+function placeWaffle(n) {
+  // levels 4-5: the waffle maker sits on the back counter, against the wall
+  const z = n >= 4 ? SZ : -3.4;
+  waffleSt.g.position.y = n >= 4 ? 1.26 : 0;
+  waffleSt.g.position.z = z;
+  waffleSt.pos.z = z;
+  waffleSt.ring.position.z = z + 1.4;
+  waffleSt.bar.position.z = z + 0.2;
+  waffleSt.bar.position.y = n >= 4 ? 2.9 : 1.9;
+  waffleTag.position.z = z;
+  waffleTag.position.y = n >= 4 ? TAG_Y : 2.2;
+}
 function placeStations(n) {
-  for (const [k, x4] of Object.entries(L4_X)) {
+  placeWaffle(n);
+  for (const k of Object.keys(L5_X)) {
     const s = stations[k];
-    const dx = (n >= 4 ? x4 : baseX[k]) - s.pos.x;
+    const dx = (n >= 4 ? L4_X[k] ?? baseX[k] : baseX[k]) - s.pos.x;
     if (!dx) continue;
     s.pos.x += dx;
     s.g.position.x += dx;
@@ -326,11 +353,20 @@ export function applyStationLevel(n) {
   honeySt.g.visible = n >= 3;
   honeySt.hidden = n < 3;
   honeyTag.visible = n >= 3;
+  creamSt.g.visible = n >= 5;
+  creamSt.hidden = n < 5;
+  creamTag.visible = n >= 5;
   waffleSt.g.visible = n >= 3;
   waffleSt.hidden = n < 3;
   waffleTag.visible = n >= 3;
 
+  const cx = COUNTER_X[n - 1];
   const scale = n === 3 ? SERVE_SCALE : n >= 4 ? 1.7 : 1;
+  counterBase.position.x = cx;
+  counterTop.position.x = cx;
+  serveGlow.position.x = cx;
+  serveSt.ring.position.x = cx;
+  serveSt.pos.x = cx;
   counterBase.scale.x = scale;
   counterTop.scale.x = scale;
   serveGlow.scale.x = scale;

@@ -34,9 +34,30 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
     add(new THREE.SphereGeometry(0.06, 8, 8), M(0xb3122e), 0, 1.5, 0.23, fancy);
     box(0.2, 0.08, 0.05, M(0xb3122e), -0.09, 1.5, 0.23, fancy, 0.02);
     box(0.2, 0.08, 0.05, M(0xb3122e), 0.09, 1.5, 0.23, fancy, 0.02);
-    cyl(0.31, 0.31, 0.06, gold, 0, 2.1, 0, fancy, 20);
-    cyl(0.24, 0.28, 0.32, white, 0, 2.38, 0, fancy, 20);
-    add(new THREE.SphereGeometry(0.15, 12, 10), gold, 0, 2.6, 0, fancy);
+    const toque = new THREE.Group();
+    cyl(0.31, 0.31, 0.06, gold, 0, 2.1, 0, toque, 20);
+    cyl(0.24, 0.28, 0.32, white, 0, 2.38, 0, toque, 20);
+    add(new THREE.SphereGeometry(0.15, 12, 10), gold, 0, 2.6, 0, toque);
+    fancy.add(toque);
+    // level 5: gold crown and crimson cape instead of the toque
+    const royal = new THREE.Group();
+    const ruby = M(0xd0183a, { roughness: 0.2, emissive: 0x4a0612 });
+    cyl(0.27, 0.29, 0.16, gold, 0, 2.2, 0, royal, 20);
+    for (let i = 0; i < 6; i++) {
+      const a = (i / 6) * Math.PI * 2;
+      const spike = add(new THREE.ConeGeometry(0.06, 0.2, 6), gold, Math.cos(a) * 0.26, 2.38, Math.sin(a) * 0.26, royal);
+      add(new THREE.SphereGeometry(0.035, 8, 8), ruby, Math.cos(a) * 0.26, 2.5, Math.sin(a) * 0.26, royal);
+    }
+    const cape = new THREE.Group();
+    cape.position.set(0, 1.6, -0.3);
+    box(0.86, 1.1, 0.06, M(0xa3162b, { roughness: 0.7 }), 0, -0.55, 0, cape, 0.02);
+    royal.add(cape);
+    g.userData.cape = cape;
+    box(0.9, 0.12, 0.5, M(0xf6f0e8, { roughness: 0.9 }), 0, 1.55, -0.03, royal, 0.03);
+    royal.visible = false;
+    fancy.add(royal);
+    g.userData.toque = toque;
+    g.userData.royal = royal;
     fancy.visible = false;
     g.add(fancy);
     g.userData.fancy = fancy;
@@ -49,7 +70,9 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
   return g;
 }
 
-export function dressChef(g, fancy) {
+export function dressChef(g, fancy, royal = false) {
+  g.userData.toque.visible = !royal;
+  g.userData.royal.visible = royal;
   g.userData.fancy.visible = fancy;
   g.userData.basic.visible = !fancy;
   g.userData.shirt.color.setHex(fancy ? 0x15151c : g.userData.shirtBase);

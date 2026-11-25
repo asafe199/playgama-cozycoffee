@@ -8,6 +8,9 @@ export const RECIPES = {
   honeylatte: { label: 'Honey Latte', icon: '🥛🍯' },
   wafflehoney: { label: 'Waffle with Honey', icon: '🧇🍯' },
   honeyespresso: { label: 'Honey Espresso', icon: '☕🍯' },
+  creamlatte: { label: 'Cream Latte', icon: '🥛🍦' },
+  creamwaffle: { label: 'Waffle with Cream', icon: '🧇🍦' },
+  creammocha: { label: 'Cream Mocha', icon: '☕🍫🍦' },
 };
 
 export const ORDER_POOLS = [
@@ -15,4 +18,5 @@ export const ORDER_POOLS = [
   ['espresso', 'latte', 'croissant', 'mocha', 'mochalatte', 'chococroissant'],
   ['espresso', 'latte', 'croissant', 'mocha', 'mochalatte', 'chococroissant', 'honeylatte', 'wafflehoney'],
   ['espresso', 'latte', 'croissant', 'mocha', 'mochalatte', 'chococroissant', 'honeylatte', 'wafflehoney', 'honeyespresso', 'honeyespresso'],
+  ['espresso', 'latte', 'croissant', 'mocha', 'mochalatte', 'chococroissant', 'honeylatte', 'wafflehoney', 'honeyespresso', 'creamlatte', 'creamwaffle', 'creammocha', 'creamlatte'],
 ];

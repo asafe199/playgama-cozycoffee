@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black } from './materials.js';
-import { THEMES } from '../model/levels.js';
+import { THEMES, COUNTER_X } from '../model/levels.js';
 import { tr } from '../model/i18n.js';
 
 const brick = M(0xb5654a, { roughness: 0.9 });
@@ -29,7 +29,7 @@ for (let k = 0; k < 2; k++) {
   noShadow(box(0.04, 2.3, 0.05, black, -5.92, 2.5, z));
   noShadow(box(0.04, 0.05, 2.9, black, -5.92, 2.5, z));
 }
-add(new THREE.CylinderGeometry(2.4, 2.4, 0.03, 48), rugMat, 0, 0.02, 1.2);
+const baseRug = add(new THREE.CylinderGeometry(2.4, 2.4, 0.03, 48), rugMat, 0, 0.02, 1.2);
 
 
 function shelf(x, y) {
@@ -73,7 +73,7 @@ const greenPlants = [
 ];
 
 const leafMat = M(0xb98a5e, { roughness: 0.5 });
-const doorDecor = [new THREE.Group(), new THREE.Group(), new THREE.Group(), new THREE.Group()];
+const doorDecor = [new THREE.Group(), new THREE.Group(), new THREE.Group(), new THREE.Group(), new THREE.Group()];
 function entranceDoor(x, z) {
   const g = new THREE.Group();
   const postH = 2.7, half = 0.62;
@@ -101,7 +101,7 @@ let doorGroup;
 function buildDoorDecor(postH, half) {
   const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.95 });
   const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
-  const [, d2, d3, d4] = doorDecor;
+  const [, d2, d3, d4, d5] = doorDecor;
   // level 2: brass push plates
   for (const sx of [-1, 1]) box(0.08, 0.5, 0.04, gold, sx * 0.1, 1.1, 0.07, d2);
   // level 3: gold arch, columns with lanterns, red carpet
@@ -128,6 +128,18 @@ function buildDoorDecor(postH, half) {
   }
   box(1.3, 0.03, 2.6, M(0x4b2a8a, { roughness: 0.9 }), 0, 0.03, 1.5, d4);
   for (const sx of [-1, 1]) box(0.05, 0.035, 2.6, gold, sx * 0.67, 0.035, 1.5, d4);
+  // level 5: triple gold arch, ruby crown, crimson carpet
+  for (const r of [0.16, 0.3, 0.44]) add(new THREE.TorusGeometry(half + r, 0.06, 10, 32, Math.PI), gold, 0, postH, 0.12, d5);
+  add(new THREE.OctahedronGeometry(0.22), M(0xd0183a, { roughness: 0.1, emissive: 0x6a0a1c }), 0, postH + half + 0.7, 0.12, d5);
+  for (const sx of [-1, 1]) {
+    const cx = sx * (half + 0.55);
+    cyl(0.15, 0.17, 3.4, M(0xf1ece2, { roughness: 0.2 }), cx, 1.7, 0.35, d5, 20);
+    cyl(0.26, 0.26, 0.12, gold, cx, 0.06, 0.35, d5, 20);
+    cyl(0.26, 0.26, 0.12, gold, cx, 3.4, 0.35, d5, 20);
+    noShadow(add(new THREE.SphereGeometry(0.2, 14, 14), glow(0xff9ab0), cx, 3.72, 0.35, d5));
+  }
+  box(1.4, 0.03, 2.8, M(0x8a1030, { roughness: 0.9 }), 0, 0.03, 1.6, d5);
+  for (const sx of [-1, 1]) box(0.05, 0.035, 2.8, gold, sx * 0.72, 0.035, 1.6, d5);
   leafGold = gold;
 }
 let leafGold;
@@ -240,12 +252,86 @@ scene.add(extras4);
     add(new THREE.SphereGeometry(0.42, 16, 14), leaf, -5.4, 0.95, tz, extras4);
   }
   // two staggered rows of tables, no lamps on the tables
-  for (const tx of [-4.5, -1.5, 1.5, 4.5]) cafeTable(tx, 4.3, extras4);
-  for (const tx of [-4.5, -1.5, 1.5, 4.5]) cafeTable(tx, 7.8, extras4);
+  for (const tx of [-3, 0, 3, 6]) cafeTable(tx, 4.3, extras4);
+  for (const tx of [-3, 0, 3, 6]) cafeTable(tx, 7.8, extras4);
   // royal runner and gold rug border
-  const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 0, 0.05, 1.2, extras4));
+  const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 1.5, 0.05, 1.2, extras4));
   border.rotation.x = Math.PI / 2;
-  noShadow(box(1.1, 0.02, 8.0, M(0x4b2a8a, { roughness: 0.95 }), 0, 0.03, 4.2, extras4, 0.005));
+  noShadow(box(1.1, 0.02, 8.0, M(0x4b2a8a, { roughness: 0.95 }), 1.5, 0.03, 4.2, extras4, 0.005));
+}
+
+// ---------- level 5 ("Café Imperial"): even bigger hall + decor ----------
+export const bigRoom5 = new THREE.Group();
+bigRoom5.visible = false;
+scene.add(bigRoom5);
+for (let i = 0; i < 32; i++) {
+  const m = M(0xe7dcd2, { roughness: 0.3 });
+  floorMats.push(m);
+  box(2.4, 0.16, 0.5, m, 10.8, -0.08, -5.75 + i * 0.5, bigRoom5, 0.01);
+}
+for (let i = 0; i < 6; i++) {
+  const m = M(0xe7dcd2, { roughness: 0.3 });
+  floorMats.push(m);
+  box(18, 0.16, 0.5, m, 3, -0.08, 10.75 + i * 0.5, bigRoom5, 0.01);
+}
+box(2.4, 1.4, 0.3, brick, 10.8, 0.7, -6.15, bigRoom5);
+box(2.4, WH - 1.4, 0.3, wallMat, 10.8, 1.4 + (WH - 1.4) / 2, -6.15, bigRoom5);
+box(2.4, 1.2, 1.2, woodDark, 10.8, 0.6, -5.3, bigRoom5);
+box(2.4, 0.12, 1.4, top, 10.8, 1.26, -5.3, bigRoom5);
+box(0.3, WH, 3, wallMat, -6.15, WH / 2, 11.5, bigRoom5);
+export const extras5 = new THREE.Group();
+extras5.visible = false;
+scene.add(extras5);
+{
+  const cv = document.createElement('canvas');
+  cv.width = 512; cv.height = 160;
+  const c = cv.getContext('2d');
+  c.font = 'bold 60px system-ui, sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.shadowColor = '#ff9ab0'; c.shadowBlur = 28;
+  c.fillStyle = '#fff0f3';
+  c.fillText(tr('Café Imperial').toUpperCase(), 256, 82);
+  const sign = noShadow(add(new THREE.PlaneGeometry(2.7, 0.84), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.5, extras5));
+  sign.rotation.y = Math.PI / 2;
+  const goldM = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
+  const marble = M(0xf6f0e8, { roughness: 0.2 });
+  const crystal = new THREE.MeshBasicMaterial({ color: 0xffe6ee });
+  // marble pillars on both sides of the hall
+  for (const [px, pz] of [[-5.5, 3.2], [-5.5, 8.0], [-5.5, 12.6], [10.6, 8.0], [10.6, 12.6], [6.4, 12.6]]) {
+    cyl(0.28, 0.32, WH - 0.4, marble, px, (WH - 0.4) / 2, pz, extras5, 24);
+    cyl(0.4, 0.4, 0.15, goldM, px, 0.08, pz, extras5, 24);
+    cyl(0.4, 0.4, 0.15, goldM, px, WH - 0.4, pz, extras5, 24);
+  }
+  // crystal chandeliers
+  const chandelier = (x, z) => {
+    noShadow(cyl(0.012, 0.012, 1.4, goldM, x, WH - 0.7, z, extras5, 6));
+    const ring = noShadow(add(new THREE.TorusGeometry(0.6, 0.04, 8, 32), goldM, x, WH - 1.45, z, extras5));
+    ring.rotation.x = Math.PI / 2;
+    for (let i = 0; i < 10; i++) {
+      const a = (i / 10) * Math.PI * 2;
+      noShadow(add(new THREE.OctahedronGeometry(0.07), crystal, x + Math.cos(a) * 0.6, WH - 1.65, z + Math.sin(a) * 0.6, extras5));
+    }
+    noShadow(add(new THREE.SphereGeometry(0.14, 12, 12), crystal, x, WH - 1.45, z, extras5));
+  };
+  for (const [x, z] of [[-3.55, 6], [2.45, 6], [8.45, 6], [-0.55, 10], [5.45, 10]]) chandelier(x, z);
+  // marble fountain at the end of the hall
+  cyl(1.1, 1.2, 0.35, marble, 2.45, 0.18, 12.6, extras5, 32);
+  noShadow(cyl(0.95, 0.95, 0.04, new THREE.MeshBasicMaterial({ color: 0x7fd0ff }), 2.45, 0.36, 12.6, extras5, 32));
+  cyl(0.12, 0.16, 1.0, marble, 2.45, 0.8, 12.6, extras5, 16);
+  cyl(0.4, 0.2, 0.12, marble, 2.45, 1.3, 12.6, extras5, 24);
+  // gold urns with roses along the right side
+  for (const tz of [-0.6, 1.0]) {
+    cyl(0.22, 0.28, 0.6, goldM, 11.2, 0.3, tz, extras5, 16);
+    add(new THREE.SphereGeometry(0.34, 14, 12), M(0xc0152f, { roughness: 0.7 }), 11.2, 0.85, tz, extras5);
+  }
+  // tables: two sparse staggered rows
+  for (const tx of [-3.55, 2.45, 8.45]) cafeTable(tx, 6.0, extras5);
+  for (const tx of [-0.55, 5.45]) cafeTable(tx, 10.0, extras5);
+  // crimson runner with gold borders and rug ring
+  const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 2.45, 0.05, 1.2, extras5));
+  border.rotation.x = Math.PI / 2;
+  noShadow(box(1.3, 0.02, 9.5, M(0x8a1030, { roughness: 0.95 }), 2.45, 0.03, 6.5, extras5, 0.005));
+  for (const sx of [-1, 1]) noShadow(box(0.05, 0.025, 9.5, goldM, 2.45 + sx * 0.67, 0.035, 6.5, extras5));
 }
 
 // ---------- level 3 ("Café Dourado") decor ----------
@@ -302,12 +388,15 @@ export function applyRoomTheme(n) {
   woodDark.color.setHex(th.counter);
   top.color.setHex(th.top);
   rugMat.color.setHex(th.rug);
+  baseRug.position.x = COUNTER_X[n - 1];
   extras.visible = n === 2;
   extras3.visible = n === 3;
   extras4.visible = n === 4;
-  bigRoom.visible = n === 4;
-  doorGroup.position.x = n >= 4 ? 9.35 : 5.85;
+  extras5.visible = n === 5;
+  bigRoom.visible = n >= 4;
+  bigRoom5.visible = n >= 5;
+  doorGroup.position.x = n >= 5 ? 11.65 : n >= 4 ? 9.35 : 5.85;
   greenPlants.forEach((p) => (p.visible = n === 1));
-  leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22, 0x2a1850][n - 1]);
+  leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22, 0x2a1850, 0x6a1020][n - 1]);
   doorDecor.forEach((d, i) => (d.visible = i === n - 1));
 }

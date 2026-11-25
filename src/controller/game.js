@@ -9,7 +9,7 @@ import { makeItem } from '../view/items.js';
 import { makePerson, animatePerson, dressChef } from '../view/people.js';
 import { applyRoomTheme } from '../view/room.js';
 import {
-  stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, waffleSt, ovenGlass, applyStationLevel,
+  stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, creamSt, waffleSt, ovenGlass, applyStationLevel,
 } from '../view/stations.js';
 import { hud, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
@@ -24,6 +24,7 @@ const HELPER_ROUTES = {
   espresso: ['cups', 'espresso'], latte: ['cups', 'milk'], croissant: ['dough', 'oven'],
   mocha: ['cups', 'espresso', 'choco'], mochalatte: ['cups', 'milk', 'choco'], chococroissant: ['dough', 'oven', 'choco'],
   honeylatte: ['cups', 'milk', 'honey'], wafflehoney: ['waffle', 'honey'], honeyespresso: ['cups', 'espresso', 'honey'],
+  creamlatte: ['cups', 'milk', 'cream'], creamwaffle: ['waffle', 'cream'], creammocha: ['cups', 'espresso', 'choco', 'cream'],
 };
 const helper = { route: [], step: 0, mesh: makePerson(0xc2185b, 0xe0ac69, 0x2b1d14, true), active: false, state: 'idle', target: null, t: 0, item: null, pos: new THREE.Vector3() };
 helper.mesh.visible = false;
@@ -74,7 +75,7 @@ function updateHelper(dt, t) {
     const c = h.target;
     if (c.state !== 'waiting') { if (h.item) h.mesh.remove(h.item); h.item = null; h.state = 'idle'; return; }
     const st = stations[h.route[h.step]];
-    const arrived = helperWalk(THREE.MathUtils.clamp(st.pos.x, BOUNDS.minX, BOUNDS.maxX), st.key === 'waffle' ? -3.0 : -4.0, dt, t);
+    const arrived = helperWalk(THREE.MathUtils.clamp(st.pos.x, BOUNDS.minX, BOUNDS.maxX), st.key === 'waffle' && level < 4 ? -3.0 : -4.0, dt, t);
     if (arrived) {
       h.mesh.rotation.y = Math.atan2(0, st.key === 'waffle' ? -1 : -1);
       h.t += dt;
@@ -119,8 +120,8 @@ function setHeld(type) {
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
     const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso' };
+      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel', creamlatte: 'Latte com Chantilly', creamwaffle: 'Waffle com Chantilly', creammocha: 'Mocha com Chantilly' }
+      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso', creamlatte: 'Cream Latte', creamwaffle: 'Waffle with Cream', creammocha: 'Cream Mocha' };
     const tag = makeTag(names[type]);
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
@@ -134,8 +135,9 @@ function applyLevel(n) {
   setLevel(n);
   applyRoomTheme(n);
   applyStationLevel(n);
-  dressChef(player, n >= 4);
-  setZoom(n >= 4 ? 10.6 : 8.2, n >= 4 ? 0.3 : -1.4, n >= 4 ? 1.7 : 0);
+  dressChef(player, n >= 4, n >= 5);
+  if (n >= 5) setZoom(12.6, 1.4, 3.0);
+  else setZoom(n >= 4 ? 10.6 : 8.2, n >= 4 ? 0.3 : -1.4, n >= 4 ? 1.7 : 0);
   refreshGuide();
 }
 
@@ -150,7 +152,7 @@ function resetGame() {
   setHeld(null);
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
-  for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt, waffleSt]) {
+  for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt, creamSt, waffleSt]) {
     s.data = {};
     if (s.cupSlot.children[0]) s.cupSlot.remove(s.cupSlot.children[0]);
     s.bar.visible = false;
@@ -187,12 +189,13 @@ function endGame(win, reason) {
   if (bridge.advertisement.isInterstitialSupported) bridge.advertisement.showInterstitial('game_over');
 }
 
+const doorX = () => (level >= 5 ? 11.7 : level >= 4 ? 9.4 : 6);
 function spawnCustomer() {
   const slot = SLOTS.findIndex((_, i) => !G.customers.some((c) => c.slot === i));
   if (slot < 0) return;
   const type = pick(ORDER_POOLS[level - 1]);
   const mesh = makePerson(pick(shirtC), pick(skinC), pick(hairC));
-  mesh.position.set(level >= 4 ? 9.4 : 6, 0, 4);
+  mesh.position.set(doorX(), 0, 4);
   const bubble = makeBubble(RECIPES[type].icon);
   bubble.position.y = 3.0;
   bubble.visible = false;
@@ -361,6 +364,28 @@ function interact(s) {
       } else if (!d.state) say('Mel precisa de latte, waffle (ou espresso no nível 4) na mão.');
       break;
     }
+    case 'cream': {
+      const d = s.data;
+      if (!d.state && ['latte', 'waffle', 'mocha'].includes(h)) {
+        d.item = h;
+        setHeld(null);
+        d.state = 'dipping'; d.t = 0;
+        s.cupSlot.add(makeItem(h));
+        say('Adicionando chantilly…');
+      } else if (!d.state && ['creamlatte', 'creamwaffle', 'creammocha'].includes(h)) {
+        d.item = { creamlatte: 'latte', creamwaffle: 'waffle', creammocha: 'mocha' }[h];
+        s.cupSlot.add(makeItem(h));
+        d.state = 'done'; d.t = 0;
+        setHeld(null);
+        say('Item devolvido.');
+      } else if (d.state === 'done' && !h) {
+        s.cupSlot.remove(s.cupSlot.children[0]);
+        d.state = null; s.bar.visible = false;
+        setHeld({ latte: 'creamlatte', waffle: 'creamwaffle', mocha: 'creammocha' }[d.item]);
+        say('Pronto! Entregue no prato do cliente.');
+      } else if (!d.state) say('Chantilly precisa de latte, waffle ou mocha na mão.');
+      break;
+    }
     case 'serve': {
       if (!h) return say('Você não está segurando nada.');
       const target = G.customers
@@ -419,8 +444,8 @@ function updateStation(s, dt, doneAt) {
     if (d.t >= doneAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
-      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', waffle: 'wafflehoney', espresso: 'honeyespresso' }[d.item] : s.key === 'waffle' ? 'waffle' : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
-      say(s.key === 'waffle' ? 'Waffle pronto! Pegue na máquina.' : s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
+      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'cream' ? { latte: 'creamlatte', waffle: 'creamwaffle', mocha: 'creammocha' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', waffle: 'wafflehoney', espresso: 'honeyespresso' }[d.item] : s.key === 'waffle' ? 'waffle' : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
+      say(s.key === 'waffle' ? 'Waffle pronto! Pegue na máquina.' : s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'cream' ? 'Chantilly pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
     }
   } else if (d.state === 'done') {
     s.bar.scale.x = 1.2;
@@ -461,6 +486,14 @@ function tick() {
     }
     player.position.set(P.pos.x, moving ? Math.abs(Math.sin(t * 14)) * 0.05 : 0, P.pos.z);
     animatePerson(player, moving, t, !!P.held);
+    const cape = player.userData.cape;
+    if (cape) {
+      const k = Math.min(1, dt * 8);
+      const target = moving ? 0.45 + Math.sin(t * 11) * 0.18 : 0.04;
+      cape.rotation.x += (target - cape.rotation.x) * k;
+      cape.rotation.z = (moving ? Math.sin(t * 7) * 0.1 : 0);
+      cape.scale.x = 1 + (moving ? Math.sin(t * 9) * 0.06 : 0);
+    }
     const near = nearest();
     if (!moving && near) {
       const tx = near.key === 'serve' ? P.pos.x : near.pos.x;
@@ -476,6 +509,7 @@ function tick() {
     updateStation(ovenSt, dt, 5);
     updateStation(chocoSt, dt, 2.5);
     updateStation(honeySt, dt, 2.5);
+    updateStation(creamSt, dt, 2.5);
     updateStation(waffleSt, dt, 4);
     updateHelper(dt, t);
     ovenGlass.material.emissive.setHex(ovenSt.data.state === 'baking' ? 0xff6a00 : 0x000000);
@@ -495,7 +529,7 @@ function tick() {
   // customers
   for (let i = G.customers.length - 1; i >= 0; i--) {
     const c = G.customers[i];
-    const dest = c.state === 'leaving' ? new THREE.Vector3(level >= 4 ? 9.4 : 6, 0, 4) : new THREE.Vector3(SLOTS[c.slot], 0, -0.4);
+    const dest = c.state === 'leaving' ? new THREE.Vector3(doorX(), 0, 4) : new THREE.Vector3(SLOTS[c.slot], 0, -0.4);
     const d = dest.clone().sub(c.mesh.position);
     d.y = 0;
     if (d.length() > 0.08) {
