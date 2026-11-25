@@ -3,7 +3,7 @@ import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black, white } from './materials.js';
 import { THEMES, COUNTER_X } from '../model/levels.js';
 import { tr } from '../model/i18n.js';
-import { makePerson } from './people.js';
+import { makePerson, swayHair } from './people.js';
 import { skinC, shirtC, hairC, pick } from '../model/state.js';
 
 const diners = [];
@@ -248,6 +248,7 @@ export function animateDiners(t) {
     const c = (t * d.rate + d.ph) % (d.rest + 3.2);
     const lift = c > d.rest ? Math.sin(((c - d.rest) / 3.2) * Math.PI) : 0;
     const breathe = Math.sin(t * 1.6 + d.ph) * 0.02;
+    swayHair(d.p, false, t);
     const rot = (o, ax, v) => { o.rotation[ax] += (v - o.rotation[ax]) * 0.15; };
     rot(d.aR, 'x', -0.55 - lift * 0.5 + breathe);
     rot(d.aR.userData.fore, 'x', -1.0 - lift * 1.15);

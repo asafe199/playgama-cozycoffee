@@ -101,16 +101,23 @@ export function makePerson(shirtC, skinC, hairC, chef = false, female = false) {
     const hairM = M(hairC, { roughness: 0.8 });
     add(new THREE.SphereGeometry(0.3, 20, 14, 0, Math.PI * 2, 0, Math.PI * (female ? 0.6 : 0.55)), hairM, 0, 0.32, -0.01, head).rotation.x = -0.15;
     if (female) {
+      // the hair hangs from a pivot at the crown so it can sway
+      const sway = new THREE.Group();
+      head.add(sway);
+      g.userData.hair = sway;
+      sway.userData.ph = Math.random() * 6.28;
       if (Math.random() < 0.5) {
         // long hair down the back and over the shoulders
-        box(0.58, 0.66, 0.16, hairM, 0, 0.0, -0.2, head, 0.07);
-        box(0.08, 0.5, 0.14, hairM, -0.28, -0.05, -0.02, head, 0.04);
-        box(0.08, 0.5, 0.14, hairM, 0.28, -0.05, -0.02, head, 0.04);
+        sway.position.set(0, 0.3, 0);
+        box(0.58, 0.66, 0.16, hairM, 0, -0.3, -0.2, sway, 0.07);
+        box(0.08, 0.5, 0.14, hairM, -0.28, -0.35, -0.02, sway, 0.04);
+        box(0.08, 0.5, 0.14, hairM, 0.28, -0.35, -0.02, sway, 0.04);
       } else {
         // ponytail with a bow
-        add(new THREE.SphereGeometry(0.1, 10, 10), hairM, 0, 0.3, -0.3, head);
-        cyl(0.07, 0.03, 0.5, hairM, 0, 0.04, -0.34, head, 10).rotation.x = -0.2;
-        add(new THREE.SphereGeometry(0.06, 8, 8), M(0xff7aa8), 0, 0.3, -0.36, head);
+        sway.position.set(0, 0.3, -0.3);
+        add(new THREE.SphereGeometry(0.1, 10, 10), hairM, 0, 0, 0, sway);
+        cyl(0.07, 0.03, 0.5, hairM, 0, -0.26, -0.04, sway, 10).rotation.x = -0.2;
+        add(new THREE.SphereGeometry(0.06, 8, 8), M(0xff7aa8), 0, 0, -0.06, sway);
       }
       // lips and lashes
       noShadow(add(new THREE.SphereGeometry(0.03, 8, 6), M(0xd23a5a), 0, 0.17, 0.27, head)).scale.set(1.6, 0.7, 0.5);
@@ -129,7 +136,18 @@ export function dressChef(g, fancy, royal = false) {
   g.userData.shirt.color.setHex(royal ? 0xc0152f : fancy ? 0x15151c : g.userData.shirtBase);
 }
 
+export function swayHair(g, moving, t) {
+  const h = g.userData.hair;
+  if (!h) return;
+  const ph = h.userData.ph;
+  const x = moving ? 0.22 + Math.sin(t * 12 + ph) * 0.14 : Math.sin(t * 1.8 + ph) * 0.05;
+  const z = moving ? Math.sin(t * 6 + ph) * 0.12 : Math.sin(t * 1.3 + ph) * 0.04;
+  h.rotation.x += (x - h.rotation.x) * 0.2;
+  h.rotation.z += (z - h.rotation.z) * 0.2;
+}
+
 export function animatePerson(g, moving, t, holding = false) {
+  swayHair(g, moving, t);
   const [lL, lR] = g.userData.legs, [aL, aR] = g.userData.arms;
   const sw = moving ? Math.sin(t * 12) * 0.7 : 0;
   lL.rotation.x += (sw - lL.rotation.x) * 0.3;
