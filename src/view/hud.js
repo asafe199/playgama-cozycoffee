@@ -5,7 +5,7 @@ import { RECIPES } from '../model/recipes.js';
 import { LEVELS } from '../model/levels.js';
 
 const $ = (id) => document.getElementById(id);
-export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
+export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
 
 export function say(t) { hud.msg.textContent = tr(t); }
 

@@ -173,17 +173,24 @@ function endGame(win, reason) {
     bridge.storage.set(['best_score'], [String(G.best)]).catch(() => {});
   }
   hud.overlay.style.display = 'flex';
+  hud.card.className = win ? 'win' : 'lose';
+  hud.icon.textContent = win ? '🏆' : '💔';
   hud.title.textContent = tr(win ? 'Expediente concluído! 🌟' : 'Game over 💥');
-  const stats = lang === 'pt'
-    ? `Pontos: ${G.score} · Pedidos entregues: ${G.served} · Recorde: ${G.best}`
-    : `Score: ${G.score} · Orders served: ${G.served} · Best: ${G.best}`;
-  hud.text.textContent = `${reason}\n${stats}`;
+  const maxH = LEVELS[G.level - 1].hearts;
+  const earned = win ? (G.hearts >= maxH ? 3 : G.hearts * 2 >= maxH ? 2 : 1) : 0;
+  hud.stars.innerHTML = win ? [0, 1, 2].map((i) => `<span class="${i < earned ? '' : 'off'}" style="animation-delay:${0.25 + i * 0.18}s">⭐</span>`).join('') : '';
+  hud.text.textContent = reason;
+  const tile = (v, l, cls = '') => `<div class="stat ${cls}"><b>${v}</b><small>${l}</small></div>`;
+  hud.stats.innerHTML = lang === 'pt'
+    ? tile(G.score, 'Pontos') + tile(G.served, 'Pedidos') + tile(G.best, isBest ? 'Novo recorde!' : 'Recorde', isBest ? 'best' : '')
+    : tile(G.score, 'Score') + tile(G.served, 'Orders') + tile(G.best, isBest ? 'New best!' : 'Best', isBest ? 'best' : '');
+  hud.next.textContent = '';
   hud.btn.textContent = tr('Jogar de novo');
   if (win && G.level < LEVELS.length) {
     G.level++;
     G.maxLevel = Math.max(G.maxLevel, G.level);
     bridge.storage.set(['max_level'], [String(G.maxLevel)]).catch(() => {});
-    hud.text.textContent += lang === 'pt' ? `\nNível ${G.level}: nova cafeteria com ${SLOT_SETS[LEVELS[G.level - 1].slots].length} clientes ao mesmo tempo!` : `\nLevel ${G.level}: a new café with ${SLOT_SETS[LEVELS[G.level - 1].slots].length} customers at once!`;
+    hud.next.textContent = lang === 'pt' ? `Nível ${G.level}: nova cafeteria com ${SLOT_SETS[LEVELS[G.level - 1].slots].length} clientes ao mesmo tempo!` : `Level ${G.level}: a new café with ${SLOT_SETS[LEVELS[G.level - 1].slots].length} customers at once!`;
     hud.btn.textContent = tr('Próximo nível');
   }
   if (bridge.advertisement.isInterstitialSupported) bridge.advertisement.showInterstitial('game_over');

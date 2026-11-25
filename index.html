@@ -16,9 +16,30 @@
   #msg{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);max-width:70vw;text-align:center}
   #act{position:fixed;bottom:14px;right:14px;width:86px;height:86px;border-radius:50%;border:0;background:#c0392b;color:#fff;font-size:15px;font-weight:800;box-shadow:0 4px 12px #0004}
   #drop{position:fixed;bottom:14px;right:112px;width:64px;height:64px;border-radius:50%;border:0;background:#6b4a33;color:#fff;font-size:12px;font-weight:800;box-shadow:0 4px 12px #0004}
-  #overlay{position:fixed;inset:0;background:#2a1a1099;display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;color:#fff;text-align:center;white-space:pre-line;padding:20px}
-  #overlay h1{margin:0;font-size:40px}
-  #obtn{font-size:20px;font-weight:800;padding:12px 28px;border:0;border-radius:14px;background:#ffd54a;color:#4a3426;cursor:pointer}
+  #overlay{position:fixed;inset:0;background:radial-gradient(circle at 50% 40%,#3b1f2e99,#120a10dd);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:20px;color:#4a3426}
+  #card{position:relative;width:min(440px,92vw);box-sizing:border-box;padding:30px 28px 26px;border-radius:26px;text-align:center;background:linear-gradient(180deg,#fff8ea,#f3e2c4);border:3px solid #d4af37;box-shadow:0 0 0 6px #fff8ea55,0 24px 60px #0008,inset 0 0 40px #fff9;animation:pop .45s cubic-bezier(.2,1.4,.4,1)}
+  #card.win{border-color:#e6b422}
+  #card.lose{border-color:#b3122e}
+  #oicon{position:absolute;left:50%;top:-38px;transform:translateX(-50%);width:76px;height:76px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;background:linear-gradient(180deg,#ffe27a,#d4af37);border:3px solid #fff8ea;box-shadow:0 8px 20px #0006}
+  #card.lose #oicon{background:linear-gradient(180deg,#e0556b,#a3162b)}
+  #ostars{margin-top:34px;font-size:38px;letter-spacing:6px;min-height:46px}
+  #ostars span{display:inline-block;animation:star .5s cubic-bezier(.2,1.6,.4,1) both}
+  #ostars .off{filter:grayscale(1) opacity(.35)}
+  #overlay h1{margin:6px 0 4px;font-size:34px;font-family:Georgia,'Times New Roman',serif;color:#7a1f2e;text-shadow:0 2px 0 #fff}
+  #card.lose h1{color:#a3162b}
+  #otxt{font-size:16px;opacity:.85;margin-bottom:14px;white-space:pre-line}
+  #ostats{display:flex;gap:10px;justify-content:center;margin-bottom:12px}
+  .stat{flex:1;padding:10px 6px;border-radius:14px;background:#fff;border:2px solid #ead7b3;box-shadow:0 3px 0 #ead7b3}
+  .stat b{display:block;font-size:26px;color:#7a1f2e}
+  .stat small{font-size:11px;text-transform:uppercase;letter-spacing:.06em;opacity:.7}
+  .stat.best{background:#fff3c4;border-color:#e6b422}
+  #onext{margin:0 0 14px;padding:8px 12px;border-radius:12px;background:#7a1f2e14;font-size:14px;font-weight:600;white-space:pre-line}
+  #onext:empty{display:none}
+  #obtn{font-size:20px;font-weight:800;padding:13px 34px;border:0;border-radius:16px;background:linear-gradient(180deg,#ffdf6b,#f2b81c);color:#4a3426;cursor:pointer;box-shadow:0 5px 0 #b98511,0 10px 18px #0004;transition:transform .1s}
+  #obtn:hover{transform:translateY(-2px)}
+  #obtn:active{transform:translateY(3px);box-shadow:0 2px 0 #b98511}
+  @keyframes pop{from{transform:scale(.6) translateY(30px);opacity:0}to{transform:none;opacity:1}}
+  @keyframes star{from{transform:scale(0) rotate(-120deg);opacity:0}to{transform:none;opacity:1}}
   html,body{overscroll-behavior:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent}
   canvas{touch-action:none}
   @media (max-width:900px),(max-height:520px){
@@ -29,8 +50,11 @@
     #msg{max-width:56vw;font-size:12px;bottom:88px}
     #act{width:72px;height:72px;bottom:10px;right:10px}
     #drop{width:54px;height:54px;bottom:10px;right:92px}
-    #overlay h1{font-size:28px}
-    #obtn{font-size:17px;padding:10px 22px}
+    #overlay h1{font-size:26px}
+    #card{padding:26px 16px 20px}
+    #ostars{font-size:30px;margin-top:28px}
+    .stat b{font-size:21px}
+    #obtn{font-size:17px;padding:10px 24px}
   }
 </style>
 </head>
@@ -45,7 +69,7 @@
 <div id="msg" class="pill">Pronto?</div>
 <button id="act">AÇÃO</button>
 <button id="drop">SOLTAR</button>
-<div id="overlay"><h1 id="ot"></h1><div id="otxt"></div><button id="obtn"></button></div>
+<div id="overlay"><div id="card"><div id="oicon"></div><div id="ostars"></div><h1 id="ot"></h1><div id="otxt"></div><div id="ostats"></div><div id="onext"></div><button id="obtn"></button></div></div>
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>
