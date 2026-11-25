@@ -68,15 +68,15 @@ const guide = document.createElement('div');
 guide.className = 'pill';
 guide.style.cssText = 'position:fixed;left:10px;bottom:60px;font-size:13px;line-height:1.7;font-weight:600';
 guide.innerHTML = lang === 'pt'
-  ? '<b>Receitas</b><br>Espresso: Copo → Máquina (espere) → pegue → entregue<br>Latte: Copo → Leite → entregue<br> Croissant: Massa → Forno (espere, não queime!) → pegue → entregue'
-  : '<b>Recipes</b><br>Espresso: Cup → Machine (wait) → pick up → serve<br>Latte: Cup → Milk → serve<br> Croissant: Dough → Oven (wait, don\'t burn!) → pick up → serve';
+  ? '<b>Receitas</b><br>Espresso: Copo → Máquina (espere) → pegue → entregue<br>Latte: Copo → Leite → entregue<br> Croissant: Massa → Forno (espere) → pegue → entregue'
+  : '<b>Recipes</b><br>Espresso: Cup → Machine (wait) → pick up → serve<br>Latte: Cup → Milk → serve<br> Croissant: Dough → Oven (wait) → pick up → serve';
 document.body.appendChild(guide);
 
 export function refreshGuide() {
   const l2 = level >= 2, l3 = level >= 3;
   guide.innerHTML = lang === 'pt'
-    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno (não queime!) → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Mel<br>Waffle com Mel: Croissant → Mel' : '')
-    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven (don\'t burn!) → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Honey<br>Waffle with Honey: Croissant → Honey' : '');
+    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Mel<br>Waffle com Mel: Croissant → Mel' : '')
+    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Honey<br>Waffle with Honey: Croissant → Honey' : '');
 }
 
 hud.act.textContent = tr('AÇÃO');

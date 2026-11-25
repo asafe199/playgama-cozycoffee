@@ -27,8 +27,8 @@ function setHeld(type) {
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
     const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel', burnt: 'Queimado' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey', burnt: 'Burnt' };
+      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel' }
+      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey' };
     const tag = makeTag(names[type]);
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
@@ -188,18 +188,17 @@ function interact(s) {
         setHeld(null);
         d.state = 'baking'; d.t = 0;
         s.cupSlot.add(makeItem('dough'));
-        say('Assando… não deixe queimar!');
+        say('Assando…');
       } else if (!d.state && h === 'croissant') {
         s.cupSlot.add(makeItem('croissant'));
         d.state = 'done'; d.t = 0;
         setHeld(null);
         say('Item devolvido.');
-      } else if ((d.state === 'done' || d.state === 'burnt') && !h) {
+      } else if (d.state === 'done' && !h) {
         s.cupSlot.remove(s.cupSlot.children[0]);
-        const burnt = d.state === 'burnt';
         d.state = null; s.bar.visible = false;
-        setHeld(burnt ? 'burnt' : 'croissant');
-        say(burnt ? 'Queimou! Jogue no lixo.' : 'Croissant pronto! Entregue no balcão.');
+        setHeld('croissant');
+        say('Croissant pronto! Entregue no balcão.');
       } else if (!d.state) say('Coloque massa aqui.');
       break;
     }
@@ -293,7 +292,7 @@ function clampPlayer() {
   P.pos.z = THREE.MathUtils.clamp(P.pos.z, -4.5, -2.3);
 }
 
-function updateStation(s, dt, t, doneAt, burnAt) {
+function updateStation(s, dt, doneAt) {
   const d = s.data;
   if (!d.state) { s.bar.visible = false; return; }
   s.bar.visible = true;
@@ -306,19 +305,7 @@ function updateStation(s, dt, t, doneAt, burnAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
       s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', croissant: 'wafflehoney' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
-      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno antes de queimar.');
-    }
-  } else if (d.state === 'done' && burnAt) {
-    d.t += dt;
-    s.bar.scale.x = Math.max(0.01, (1 - d.t / burnAt) * 1.2);
-    s.bar.position.x = s.pos.x - 0.6 + s.bar.scale.x / 2;
-    s.bar.material.color.setHex(Math.floor(t * 6) % 2 ? 0xff4d4d : 0xffcc00);
-    if (d.t >= burnAt) {
-      d.state = 'burnt';
-      s.cupSlot.remove(s.cupSlot.children[0]);
-      s.cupSlot.add(makeItem('burnt'));
-      s.bar.visible = false;
-      say('O croissant queimou!');
+      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
     }
   } else if (d.state === 'done') {
     s.bar.scale.x = 1.2;
@@ -369,11 +356,11 @@ function tick() {
     for (const s of Object.values(stations)) s.ring.material.opacity = s === near ? 0.35 + Math.sin(t * 6) * 0.1 : 0;
 
     // stations
-    updateStation(machineSt, dt, t, 4, 0);
-    updateStation(milkSt, dt, t, 3, 0);
-    updateStation(ovenSt, dt, t, 5, 6);
-    updateStation(chocoSt, dt, t, 2.5, 0);
-    updateStation(honeySt, dt, t, 2.5, 0);
+    updateStation(machineSt, dt, 4);
+    updateStation(milkSt, dt, 3);
+    updateStation(ovenSt, dt, 5);
+    updateStation(chocoSt, dt, 2.5);
+    updateStation(honeySt, dt, 2.5);
     ovenGlass.material.emissive.setHex(ovenSt.data.state === 'baking' ? 0xff6a00 : 0x000000);
     ovenGlass.material.emissiveIntensity = 0.6;
 

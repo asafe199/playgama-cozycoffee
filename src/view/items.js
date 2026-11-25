@@ -20,7 +20,7 @@ export function makeItem(type) {
     for (const i of [-1, 0, 1]) for (const j of [-1, 0, 1]) add(new THREE.BoxGeometry(0.07, 0.03, 0.07), ridge, i * 0.09, 0.14, j * 0.09, g);
     add(new THREE.SphereGeometry(0.05, 10, 8), M(0xd98c1f, { roughness: 0.3, emissive: 0x5a3a0a }), 0, 0.15, 0, g).scale.set(1.4, 0.4, 1.4);
   } else {
-    const c = add(new THREE.TorusGeometry(0.12, 0.07, 10, 18, Math.PI * 1.5), M(type === 'burnt' ? 0x1b1b1b : type === 'chococroissant' ? 0x6b3a1c : 0xdc9a4a, { roughness: 0.85 }), 0, 0.15, 0, g);
+    const c = add(new THREE.TorusGeometry(0.12, 0.07, 10, 18, Math.PI * 1.5), M(type === 'chococroissant' ? 0x6b3a1c : 0xdc9a4a, { roughness: 0.85 }), 0, 0.15, 0, g);
     c.rotation.x = Math.PI / 2;
   }
   g.traverse((o) => (o.castShadow = true));
