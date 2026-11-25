@@ -326,6 +326,11 @@ function interact(s) {
         d.state = 'baking'; d.t = 0;
         s.cupSlot.add(makeItem('dough'));
         say('Fazendo o waffle…');
+      } else if (!d.state && h === 'waffle') {
+        s.cupSlot.add(makeItem('waffle'));
+        d.state = 'done'; d.t = 0;
+        setHeld(null);
+        say('Item devolvido.');
       } else if (d.state === 'done' && !h) {
         s.cupSlot.remove(s.cupSlot.children[0]);
         d.state = null; s.bar.visible = false;
