@@ -50,7 +50,7 @@ box(11.2, 0.12, 1.4, top, -0.3, 1.26, -5.3);
 export const counterBase = box(7.4, 0.9, 0.7, woodDark, 0, 0.45, -1.2);
 export const counterTop = box(7.6, 0.1, 0.9, top, 0, 0.95, -1.2);
 
-function plant(x, z, s = 1) {
+function plant(x, z, s = 1, parent = scene) {
   const g = new THREE.Group();
   cyl(0.32, 0.25, 0.5, M(0xe9e4dc, { roughness: 0.9 }), 0, 0.25, 0, g, 20);
   for (let i = 0; i < 9; i++) {
@@ -61,7 +61,7 @@ function plant(x, z, s = 1) {
   }
   g.position.set(x, 0, z);
   g.scale.setScalar(s);
-  scene.add(g);
+  parent.add(g);
   return g;
 }
 const greenPlants = [
@@ -116,6 +116,18 @@ scene.add(extras);
     cyl(0.28, 0.28, 0.08, M(0xd4538a, { roughness: 0.5 }), -5.0, 0.8, z, extras, 20);
     cyl(0.04, 0.04, 0.8, metal, -5.0, 0.4, z, extras, 8);
   }
+  // layout: long planters along both side walls, two tables stacked in a column
+  const planter = (x, z0, z1) => {
+    const len = z1 - z0, zc = (z0 + z1) / 2;
+    box(0.6, 0.5, len, woodDark, x, 0.25, zc, extras, 0.04);
+    box(0.5, 0.04, len - 0.1, M(0x3a2a1c, { roughness: 1 }), x, 0.5, zc, extras);
+    const n = Math.round(len / 0.9);
+    for (let i = 0; i < n; i++) plant(x, z0 + (len / n) * (i + 0.5), 0.75, extras).position.y = 0.4;
+  };
+  planter(-5.65, -3.6, -1.2);
+  planter(5.65, -3.6, -1.2);
+  cafeTable(-3.4, 2.0, extras);
+  cafeTable(-3.4, 4.5, extras);
 }
 
 function cafeTable(x, z, parent = scene) {
@@ -195,5 +207,5 @@ export function applyRoomTheme(n) {
   rugMat.color.setHex(th.rug);
   extras.visible = n === 2;
   extras3.visible = n === 3;
-  greenPlants.forEach((p) => (p.visible = n !== 3));
+  greenPlants.forEach((p) => (p.visible = n === 1));
 }
