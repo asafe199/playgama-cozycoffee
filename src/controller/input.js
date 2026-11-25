@@ -57,7 +57,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
     }
   };
 
-  // one finger/click = tap to move; two fingers = pinch zoom + pan; wheel zooms on desktop
+  // one finger/click = tap to move (touch: drag pans the camera); two fingers = pinch zoom + pan; wheel zooms on desktop
   const pts = new Map();
   let gesture = false, startInfo = null, last = null;
   const mid = () => { const [a, b] = [...pts.values()]; return { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2, d: Math.hypot(a.x - b.x, a.y - b.y) }; };
@@ -76,7 +76,17 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
       if (m.d > 0) zoomBy(last.d / m.d);
       panBy(m.x - last.x, m.y - last.y);
       last = m;
-    } else if (startInfo && Math.hypot(e.clientX - startInfo.x, e.clientY - startInfo.y) > 12) startInfo.moved = true;
+    } else if (startInfo) {
+      if (!startInfo.moved && Math.hypot(e.clientX - startInfo.x, e.clientY - startInfo.y) > 12) {
+        startInfo.moved = true;
+        startInfo.lx = startInfo.x; startInfo.ly = startInfo.y;
+      }
+      // press and drag with one finger moves the camera
+      if (startInfo.moved && e.pointerType !== 'mouse') {
+        panBy(e.clientX - startInfo.lx, e.clientY - startInfo.ly);
+        startInfo.lx = e.clientX; startInfo.ly = e.clientY;
+      }
+    }
   });
   const end = (e) => {
     if (!pts.has(e.pointerId)) return;

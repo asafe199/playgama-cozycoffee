@@ -57,21 +57,28 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
     cyl(0.24, 0.28, 0.32, white, 0, 2.38, 0, toque, 20);
     add(new THREE.SphereGeometry(0.15, 12, 10), gold, 0, 2.6, 0, toque);
     fancy.add(toque);
-    // level 5: gold crown and crimson cape instead of the toque
+    // level 5: Santa outfit (red coat, white trim, belt, beard, hat with a swaying tail)
     const royal = new THREE.Group();
-    const ruby = M(0xd0183a, { roughness: 0.2, emissive: 0x4a0612 });
-    cyl(0.27, 0.29, 0.16, gold, 0, 2.2, 0, royal, 20);
-    for (let i = 0; i < 6; i++) {
-      const a = (i / 6) * Math.PI * 2;
-      const spike = add(new THREE.ConeGeometry(0.06, 0.2, 6), gold, Math.cos(a) * 0.26, 2.38, Math.sin(a) * 0.26, royal);
-      add(new THREE.SphereGeometry(0.035, 8, 8), ruby, Math.cos(a) * 0.26, 2.5, Math.sin(a) * 0.26, royal);
-    }
+    const red = M(0xc0152f, { roughness: 0.8 });
+    const fur = M(0xfafafa, { roughness: 1 });
+    box(0.8, 0.88, 0.5, red, 0, 1.1, 0, royal, 0.1);
+    box(0.84, 0.1, 0.54, fur, 0, 0.68, 0, royal, 0.03);
+    box(0.14, 0.88, 0.52, fur, 0, 1.1, 0, royal, 0.03);
+    box(0.82, 0.12, 0.52, M(0x15151c), 0, 0.98, 0, royal, 0.02);
+    box(0.17, 0.15, 0.06, gold, 0, 0.98, 0.27, royal, 0.02);
+    for (const sx of [-0.43, 0.43]) box(0.2, 0.08, 0.22, fur, sx, 0.85, 0, royal, 0.03);
+    add(new THREE.SphereGeometry(0.2, 14, 12), fur, 0, 1.64, 0.15, royal).scale.set(1.15, 1.1, 0.8);
+    add(new THREE.SphereGeometry(0.09, 10, 8), fur, -0.09, 1.72, 0.27, royal).scale.set(1.4, 0.6, 0.6);
+    add(new THREE.SphereGeometry(0.09, 10, 8), fur, 0.09, 1.72, 0.27, royal).scale.set(1.4, 0.6, 0.6);
+    cyl(0.31, 0.31, 0.12, fur, 0, 2.02, 0, royal, 20);
+    const hat = cyl(0.27, 0.1, 0.38, red, 0, 2.27, -0.05, royal, 18);
+    hat.rotation.x = -0.25;
     const cape = new THREE.Group();
-    cape.position.set(0, 1.6, -0.3);
-    box(0.86, 1.1, 0.06, M(0xa3162b, { roughness: 0.7 }), 0, -0.55, 0, cape, 0.02);
+    cape.position.set(0, 2.4, -0.18);
+    cyl(0.12, 0.05, 0.45, red, 0, -0.22, 0, cape, 12);
+    add(new THREE.SphereGeometry(0.09, 10, 10), fur, 0, -0.5, 0, cape);
     royal.add(cape);
     g.userData.cape = cape;
-    box(0.9, 0.12, 0.5, M(0xf6f0e8, { roughness: 0.9 }), 0, 1.55, -0.03, royal, 0.03);
     royal.visible = false;
     fancy.add(royal);
     g.userData.toque = toque;
@@ -93,7 +100,7 @@ export function dressChef(g, fancy, royal = false) {
   g.userData.royal.visible = royal;
   g.userData.fancy.visible = fancy;
   g.userData.basic.visible = !fancy;
-  g.userData.shirt.color.setHex(fancy ? 0x15151c : g.userData.shirtBase);
+  g.userData.shirt.color.setHex(royal ? 0xc0152f : fancy ? 0x15151c : g.userData.shirtBase);
 }
 
 export function animatePerson(g, moving, t, holding = false) {
