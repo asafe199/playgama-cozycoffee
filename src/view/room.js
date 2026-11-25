@@ -72,6 +72,8 @@ const greenPlants = [
   plant(-5.3, 4.8, 1.2),
 ];
 
+const leafMat = M(0xb98a5e, { roughness: 0.5 });
+const doorDecor = [new THREE.Group(), new THREE.Group(), new THREE.Group()];
 function entranceDoor(x, z) {
   const g = new THREE.Group();
   const postH = 2.7, half = 0.62;
@@ -81,17 +83,43 @@ function entranceDoor(x, z) {
   function leaf(hingeX, openSign) {
     const pivot = new THREE.Group();
     pivot.position.set(hingeX, 0, 0);
-    box(half - 0.06, postH - 0.1, 0.05, wood, ((half - 0.06) / 2) * openSign, (postH - 0.1) / 2, 0, pivot, 0.02);
+    box(half - 0.06, postH - 0.1, 0.05, leafMat, ((half - 0.06) / 2) * openSign, (postH - 0.1) / 2, 0, pivot, 0.02);
     add(new THREE.SphereGeometry(0.035, 10, 10), black, (half - 0.16) * openSign, 1.1, 0.04, pivot);
     pivot.rotation.y = openSign * 1.2;
     g.add(pivot);
   }
   leaf(-half + 0.02, 1);
   leaf(half - 0.02, -1);
+  doorDecor.forEach((d) => { d.visible = false; g.add(d); });
+  buildDoorDecor(postH, half);
   g.position.set(x, 0, z);
   g.rotation.y = Math.PI / 2;
   scene.add(g);
 }
+function buildDoorDecor(postH, half) {
+  const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.95 });
+  const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
+  const [, d2, d3] = doorDecor;
+  // level 2: neon arch, pink mat, brass push plates
+  const neon = noShadow(add(new THREE.TorusGeometry(half + 0.24, 0.035, 8, 40, Math.PI), glow(0xff4fa3), 0, postH, 0.12, d2));
+  for (const sx of [-1, 1]) noShadow(cyl(0.035, 0.035, postH, glow(0xff4fa3), sx * (half + 0.24), postH / 2, 0.12, d2, 8));
+  noShadow(box(1.3, 0.03, 0.8, M(0xd4538a, { roughness: 0.9 }), 0, 0.02, 0.7, d2));
+  for (const sx of [-1, 1]) box(0.08, 0.5, 0.04, gold, sx * 0.1, 1.1, 0.07, d2);
+  // level 3: gold arch, columns with lanterns, red carpet
+  add(new THREE.TorusGeometry(half + 0.18, 0.07, 10, 32, Math.PI), gold, 0, postH, 0.12, d3);
+  add(new THREE.ConeGeometry(0.14, 0.3, 4), gold, 0, postH + half + 0.35, 0.12, d3);
+  for (const sx of [-1, 1]) {
+    const cx = sx * (half + 0.45);
+    cyl(0.13, 0.15, 3.0, gold, cx, 1.5, 0.35, d3, 20);
+    cyl(0.2, 0.2, 0.1, gold, cx, 0.05, 0.35, d3, 20);
+    cyl(0.2, 0.2, 0.1, gold, cx, 3.0, 0.35, d3, 20);
+    noShadow(add(new THREE.SphereGeometry(0.17, 14, 14), glow(0xffd27a), cx, 3.25, 0.35, d3));
+  }
+  box(1.2, 0.03, 2.2, M(0x9b1c2c, { roughness: 0.9 }), 0, 0.03, 1.3, d3);
+  for (const sx of [-1, 1]) box(0.05, 0.035, 2.2, gold, sx * 0.62, 0.035, 1.3, d3);
+  leafGold = gold;
+}
+let leafGold;
 entranceDoor(5.85, 3.6);
 
 // ---------- level 2 ("Café Noir") decor ----------
@@ -209,4 +237,6 @@ export function applyRoomTheme(n) {
   extras.visible = n === 2;
   extras3.visible = n === 3;
   greenPlants.forEach((p) => (p.visible = n === 1));
+  leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22][n - 1]);
+  doorDecor.forEach((d, i) => (d.visible = i === n - 1));
 }
