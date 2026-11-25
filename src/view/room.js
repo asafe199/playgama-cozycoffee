@@ -314,11 +314,77 @@ scene.add(extras5);
     noShadow(add(new THREE.SphereGeometry(0.14, 12, 12), crystal, x, WH - 1.45, z, extras5));
   };
   for (const [x, z] of [[-3.55, 6], [2.45, 6], [8.45, 6], [-0.55, 10], [5.45, 10]]) chandelier(x, z);
-  // marble fountain at the end of the hall
-  cyl(1.1, 1.2, 0.35, marble, 2.45, 0.18, 12.6, extras5, 32);
-  noShadow(cyl(0.95, 0.95, 0.04, new THREE.MeshBasicMaterial({ color: 0x7fd0ff }), 2.45, 0.36, 12.6, extras5, 32));
-  cyl(0.12, 0.16, 1.0, marble, 2.45, 0.8, 12.6, extras5, 16);
-  cyl(0.4, 0.2, 0.12, marble, 2.45, 1.3, 12.6, extras5, 24);
+  // christmas tree at the end of the hall
+  {
+    const tx = 2.45, tz = 12.6;
+    const green = M(0x1f6b3a, { roughness: 0.9 });
+    cyl(1.0, 1.1, 0.3, marble, tx, 0.15, tz, extras5, 24);
+    cyl(0.16, 0.2, 0.5, M(0x6b4226), tx, 0.55, tz, extras5, 10);
+    const bulbs = [0xd0183a, 0xffd34d, 0x4aa3ff, 0xf6f0e8];
+    [[1.0, 1.1, 0.8], [0.8, 1.0, 1.65], [0.6, 0.9, 2.4], [0.4, 0.8, 3.05]].forEach(([r, h, y], k) => {
+      add(new THREE.ConeGeometry(r, h, 16), green, tx, y, tz, extras5);
+      for (let n = 0; n < 6; n++) {
+        const a = (n / 6) * Math.PI * 2 + k;
+        const rr = r * 0.62;
+        add(new THREE.SphereGeometry(0.07, 8, 8), M(bulbs[(n + k) % 4], { roughness: 0.3, emissive: 0x222222 }), tx + Math.cos(a) * rr, y - h * 0.15, tz + Math.sin(a) * rr, extras5);
+      }
+    });
+    add(new THREE.OctahedronGeometry(0.2), goldM, tx, 3.6, tz, extras5);
+    for (const [gx, gz, c] of [[-0.6, 0.5, 0xc0152f], [0.55, 0.6, 0xffd34d], [0.1, 0.85, 0x4aa3ff]]) {
+      box(0.35, 0.3, 0.35, M(c), tx + gx, 0.45, tz + gz, extras5, 0.02);
+    }
+  }
+  // christmas touches: candy-cane pillar stripes, garland + lights on the left wall, baubles, gifts, mini trees
+  {
+    const red = M(0xc0152f, { roughness: 0.5 });
+    const white = M(0xfafafa, { roughness: 0.5 });
+    const pine = M(0x1f6b3a, { roughness: 0.9 });
+    const lightCols = [0xff3b3b, 0xffd34d, 0x4aa3ff, 0x6bdc7a];
+    for (const [px, pz] of [[-5.5, 3.2], [-5.5, 8.0], [-5.5, 12.6], [10.6, 8.0], [10.6, 12.6], [6.4, 12.6]]) {
+      for (let y = 0.7; y < WH - 0.8; y += 0.5) cyl(0.3, 0.3, 0.2, red, px, y, pz, extras5, 20);
+      add(new THREE.TorusGeometry(0.3, 0.07, 8, 20), pine, px, WH - 0.55, pz, extras5).rotation.x = Math.PI / 2;
+      add(new THREE.SphereGeometry(0.11, 10, 10), red, px + 0.3, WH - 0.55, pz, extras5);
+    }
+    for (let z = -4.6; z <= 13.2; z += 0.45) {
+      const y = 3.75 + Math.sin(((z + 4.6) / 3.0) * Math.PI) * -0.22;
+      noShadow(add(new THREE.SphereGeometry(0.17, 8, 8), pine, -5.85, y, z, extras5));
+      noShadow(add(new THREE.SphereGeometry(0.05, 6, 6), new THREE.MeshBasicMaterial({ color: lightCols[Math.round((z + 4.6) / 0.45) % 4] }), -5.78, y - 0.17, z + 0.1, extras5));
+    }
+    for (let z = -4.2; z <= 12.5; z += 3.0) {
+      noShadow(add(new THREE.SphereGeometry(0.2, 8, 8), red, -5.8, 3.7, z, extras5));
+      noShadow(box(0.08, 0.5, 0.22, red, -5.78, 3.35, z - 0.12, extras5));
+      noShadow(box(0.08, 0.5, 0.22, red, -5.78, 3.35, z + 0.12, extras5));
+    }
+    for (let x = -4.8; x <= 11.2; x += 0.45) {
+      const y = 4.0 + Math.sin(((x + 4.8) / 3.0) * Math.PI) * -0.2;
+      noShadow(add(new THREE.SphereGeometry(0.15, 8, 8), pine, x, y, -5.9, extras5));
+      noShadow(add(new THREE.SphereGeometry(0.05, 6, 6), new THREE.MeshBasicMaterial({ color: lightCols[Math.round((x + 4.8) / 0.45) % 4] }), x, y - 0.16, -5.8, extras5));
+    }
+    for (const [x, z] of [[-3.55, 6], [2.45, 6], [8.45, 6], [-0.55, 10], [5.45, 10]]) {
+      for (const [i, c] of [[0, 0xc0152f], [1, 0xffd34d], [2, 0x4aa3ff]]) {
+        const a = (i / 3) * Math.PI * 2;
+        noShadow(add(new THREE.SphereGeometry(0.09, 10, 10), M(c, { roughness: 0.2, metalness: 0.5 }), x + Math.cos(a) * 0.35, WH - 1.95, z + Math.sin(a) * 0.35, extras5));
+      }
+    }
+    for (const [x, z] of [[-5.0, 1.2], [10.6, 3.2], [10.6, 11.0], [-1.0, 12.9]]) {
+      cyl(0.1, 0.12, 0.2, M(0x6b4226), x, 0.1, z, extras5, 8);
+      [[0.45, 0.6, 0.45], [0.35, 0.55, 0.9], [0.22, 0.5, 1.3]].forEach(([r, h, y]) => add(new THREE.ConeGeometry(r, h, 12), pine, x, y, z, extras5));
+      add(new THREE.OctahedronGeometry(0.09), goldM, x, 1.65, z, extras5);
+      add(new THREE.SphereGeometry(0.06, 8, 8), red, x + 0.18, 0.75, z + 0.1, extras5);
+      add(new THREE.SphereGeometry(0.06, 8, 8), M(0xffd34d), x - 0.15, 1.15, z + 0.12, extras5);
+    }
+    for (const [x, z, c] of [[3.9, 12.9, 0xc0152f], [1.2, 13.1, 0x2d8f4e], [4.5, 12.3, 0xffd34d]]) {
+      box(0.4, 0.35, 0.4, M(c), x, 0.18, z, extras5, 0.02);
+      box(0.42, 0.06, 0.08, white, x, 0.36, z, extras5);
+      box(0.08, 0.06, 0.42, white, x, 0.36, z, extras5);
+    }
+    for (const [x, z] of [[0.2, 3.4], [4.7, 3.4], [-3.0, 8.2], [8.2, 8.4]]) {
+      for (let i = 0; i < 6; i++) {
+        const a = (i / 6) * Math.PI * 2;
+        add(new THREE.SphereGeometry(0.09, 8, 8), red, x + Math.cos(a) * 0.12, 0.62, z + Math.sin(a) * 0.12, extras5).scale.y = 0.4;
+      }
+    }
+  }
   // gold urns with roses along the right side
   for (const tz of [-0.6, 1.0]) {
     cyl(0.22, 0.28, 0.6, goldM, 11.2, 0.3, tz, extras5, 16);
