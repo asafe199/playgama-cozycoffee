@@ -191,8 +191,6 @@ scene.add(extras3);
     tl.position.set(tx, 2.6, 4.6);
     extras3.add(tl);
   }
-  // chandelier row above the serving counter and customers
-  for (const cx of [-3.6, -1.2, 1.2, 3.6]) hang(cx, 0.2, 3.3, 0.36);
   // gold rug border
   const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.04, 8, 64), brass, 0, 0.05, 1.2, extras3));
   border.rotation.x = Math.PI / 2;
