@@ -102,10 +102,7 @@ function buildDoorDecor(postH, half) {
   const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.95 });
   const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
   const [, d2, d3, d4] = doorDecor;
-  // level 2: neon arch, pink mat, brass push plates
-  const neon = noShadow(add(new THREE.TorusGeometry(half + 0.24, 0.035, 8, 40, Math.PI), glow(0xff4fa3), 0, postH, 0.12, d2));
-  for (const sx of [-1, 1]) noShadow(cyl(0.035, 0.035, postH, glow(0xff4fa3), sx * (half + 0.24), postH / 2, 0.12, d2, 8));
-  noShadow(box(1.3, 0.03, 0.8, M(0xd4538a, { roughness: 0.9 }), 0, 0.02, 0.7, d2));
+  // level 2: brass push plates
   for (const sx of [-1, 1]) box(0.08, 0.5, 0.04, gold, sx * 0.1, 1.1, 0.07, d2);
   // level 3: gold arch, columns with lanterns, red carpet
   add(new THREE.TorusGeometry(half + 0.18, 0.07, 10, 32, Math.PI), gold, 0, postH, 0.12, d3);

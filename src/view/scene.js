@@ -5,8 +5,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 export const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xe9dfd2);
 const aspect = () => innerWidth / innerHeight;
-let frustum = 8.2;
-export const camera = new THREE.OrthographicCamera(-frustum * aspect(), frustum * aspect(), frustum, -frustum, 0.1, 100);
+export const camera = new THREE.OrthographicCamera(-8.2 * aspect(), 8.2 * aspect(), 8.2, -8.2, 0.1, 100);
 camera.position.set(11, 14, 11);
 camera.lookAt(0, 0.5, -1.4);
 
@@ -44,22 +43,47 @@ export const box = (w, h, d, mat, x, y, z, p, r = 0.03) => add(new RoundedBoxGeo
 export const cyl = (rt, rb, h, mat, x, y, z, p, seg = 24) => add(new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z, p);
 export const noShadow = (m) => ((m.castShadow = false), m);
 
-export function setZoom(f, lookZ, lookX = 0) {
-  frustum = f;
-  camera.position.set(11 + lookX, 14, 11 + (lookZ + 1.4));
-  camera.lookAt(lookX, 0.5, lookZ);
-  camera.top = f;
-  camera.bottom = -f;
+const view = { f: 8.2, lx: 0, lz: -1.4, zoom: 1, px: 0, pz: 0 };
+const ZOOM_MIN = 0.45, ZOOM_MAX = 1.6;
+// narrow (portrait) screens need a wider frame so the room still fits
+const fit = () => Math.max(1, 1.05 / aspect());
+
+function updateCamera() {
+  const f = view.f * view.zoom * fit();
+  const lx = view.lx + view.px, lz = view.lz + view.pz;
+  camera.position.set(lx + 11, 14, lz + 12.4);
+  camera.lookAt(lx, 0.5, lz);
   camera.left = -f * aspect();
   camera.right = f * aspect();
+  camera.top = f;
+  camera.bottom = -f;
   camera.updateProjectionMatrix();
 }
 
+export function setZoom(f, lookZ, lookX = 0) {
+  Object.assign(view, { f, lz: lookZ, lx: lookX, zoom: 1, px: 0, pz: 0 });
+  updateCamera();
+}
+
+export function zoomBy(factor) {
+  view.zoom = Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, view.zoom * factor));
+  updateCamera();
+}
+
+// pan by a screen-space drag (pixels); the camera looks along (-1,-1) on the ground
+export function panBy(dx, dy) {
+  const k = (2 * view.f * view.zoom * fit()) / innerHeight;
+  const r = Math.SQRT1_2;
+  view.px += (-dx * r + dy * -r) * k;
+  view.pz += (dx * r + dy * -r) * k;
+  view.px = Math.min(8, Math.max(-8, view.px));
+  view.pz = Math.min(8, Math.max(-8, view.pz));
+  updateCamera();
+}
+
 addEventListener('resize', () => {
-  camera.left = -frustum * aspect();
-  camera.right = frustum * aspect();
-  camera.top = frustum;
-  camera.bottom = -frustum;
-  camera.updateProjectionMatrix();
+  updateCamera();
   renderer.setSize(innerWidth, innerHeight);
 });
+
+updateCamera();
