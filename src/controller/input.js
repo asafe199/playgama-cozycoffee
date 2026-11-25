@@ -81,8 +81,8 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
         startInfo.moved = true;
         startInfo.lx = startInfo.x; startInfo.ly = startInfo.y;
       }
-      // press and drag with one finger moves the camera
-      if (startInfo.moved && e.pointerType !== 'mouse') {
+      // press and drag (finger or mouse) moves the camera
+      if (startInfo.moved) {
         panBy(e.clientX - startInfo.lx, e.clientY - startInfo.ly);
         startInfo.lx = e.clientX; startInfo.ly = e.clientY;
       }
