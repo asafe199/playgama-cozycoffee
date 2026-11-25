@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import { lang, tr } from '../model/i18n.js';
+import { lang, tr, setLang } from '../model/i18n.js';
 import { level, G } from '../model/state.js';
 import { RECIPES } from '../model/recipes.js';
 import { LEVELS } from '../model/levels.js';
@@ -157,6 +157,10 @@ howBtn.style.cssText = btnCss + ';background:#f3e9ff;box-shadow:0 4px 0 #9b86c9'
 const rankBtn = document.createElement('button');
 rankBtn.textContent = pt ? '🏆 Ranking' : '🏆 Rank';
 rankBtn.style.cssText = btnCss + ';background:#ffe9a8;box-shadow:0 4px 0 #c79a2a';
+const langBtn = document.createElement('button');
+langBtn.textContent = pt ? '🌐 English' : '🌐 Português';
+langBtn.style.cssText = btnCss + ';background:#d9efe3;box-shadow:0 4px 0 #6fa88a';
+langBtn.addEventListener('click', () => setLang(pt ? 'en' : 'pt'));
 const howBox = document.createElement('div');
 howBox.style.cssText = 'display:none;max-width:min(560px,92vw);max-height:62vh;overflow:auto;text-align:left;background:#ffffff14;border:1px solid #ffffff30;border-radius:14px;padding:14px 18px;font-size:15px;line-height:1.55;touch-action:pan-y';
 howBox.innerHTML = pt
@@ -165,7 +169,7 @@ howBox.innerHTML = pt
 const backBtn = document.createElement('button');
 backBtn.textContent = pt ? 'Voltar' : 'Back';
 backBtn.style.cssText = btnCss + ';display:none;background:#f3e9ff;box-shadow:0 4px 0 #9b86c9';
-const showMain = (on) => [startBtn, howBtn, rankBtn].forEach((b) => (b.style.display = on ? 'block' : 'none'));
+const showMain = (on) => [startBtn, howBtn, rankBtn, langBtn].forEach((b) => (b.style.display = on ? 'block' : 'none'));
 howBtn.addEventListener('click', () => {
   howBox.style.display = 'block'; backBtn.style.display = 'block';
   showMain(false);
@@ -216,7 +220,7 @@ function refreshMenu() {
   renderBoard();
 }
 renderBoard();
-menuRoot.append(menuSub, menuTitle, nickLabel, nickInput, playBtn, startBtn, howBtn, rankBtn, board, howBox, backBtn);
+menuRoot.append(menuSub, menuTitle, nickLabel, nickInput, playBtn, startBtn, howBtn, rankBtn, langBtn, board, howBox, backBtn);
 document.body.appendChild(menuRoot);
 hud.omenu.textContent = pt ? '🏠 Menu inicial' : '🏠 Main menu';
 function showMenu() {

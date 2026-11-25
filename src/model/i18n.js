@@ -1,6 +1,13 @@
 import bridge from '@playgama/bridge';
 
-export const lang = String(bridge.platform?.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+const saved = (() => { try { return localStorage.getItem('cafe_lang'); } catch { return null; } })();
+export const lang = saved === 'pt' || saved === 'en' ? saved : String(bridge.platform?.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
+
+// the whole UI is built from `lang` at load time, so switching saves the choice and reloads
+export function setLang(l) {
+  try { localStorage.setItem('cafe_lang', l); } catch { /* storage unavailable */ }
+  location.reload();
+}
 
 const EN = {
   'Café Noir': 'Noir Café',
