@@ -9,7 +9,7 @@ import { makeItem } from '../view/items.js';
 import { makePerson, animatePerson } from '../view/people.js';
 import { applyRoomTheme } from '../view/room.js';
 import {
-  stations, machineSt, milkSt, ovenSt, chocoSt, doceLeiteSt, ovenGlass, applyStationLevel,
+  stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, ovenGlass, applyStationLevel,
 } from '../view/stations.js';
 import { hud, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
@@ -27,8 +27,8 @@ function setHeld(type) {
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
     const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', doceleitelatte: 'Doce de Leite Latte', doceleitecroissant: 'Doce de Leite Croissant', burnt: 'Queimado' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', doceleitelatte: 'Doce de Leite Latte', doceleitecroissant: 'Doce de Leite Croissant', burnt: 'Burnt' };
+      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel', burnt: 'Queimado' }
+      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey', burnt: 'Burnt' };
     const tag = makeTag(names[type]);
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
@@ -55,7 +55,7 @@ function resetGame() {
   setHeld(null);
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
-  for (const s of [machineSt, ovenSt, milkSt, chocoSt, doceLeiteSt]) {
+  for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt]) {
     s.data = {};
     if (s.cupSlot.children[0]) s.cupSlot.remove(s.cupSlot.children[0]);
     s.bar.visible = false;
@@ -225,16 +225,16 @@ function interact(s) {
       } else if (!d.state) say('Chocolate precisa de espresso, latte ou croissant na mão.');
       break;
     }
-    case 'doceleite': {
+    case 'honey': {
       const d = s.data;
       if (!d.state && ['latte', 'croissant'].includes(h)) {
         d.item = h;
         setHeld(null);
         d.state = 'dipping'; d.t = 0;
         s.cupSlot.add(makeItem(h));
-        say('Adicionando doce de leite…');
-      } else if (!d.state && ['doceleitelatte', 'doceleitecroissant'].includes(h)) {
-        d.item = { doceleitelatte: 'latte', doceleitecroissant: 'croissant' }[h];
+        say('Adicionando mel…');
+      } else if (!d.state && ['honeylatte', 'wafflehoney'].includes(h)) {
+        d.item = { honeylatte: 'latte', wafflehoney: 'croissant' }[h];
         s.cupSlot.add(makeItem(h));
         d.state = 'done'; d.t = 0;
         setHeld(null);
@@ -242,9 +242,9 @@ function interact(s) {
       } else if (d.state === 'done' && !h) {
         s.cupSlot.remove(s.cupSlot.children[0]);
         d.state = null; s.bar.visible = false;
-        setHeld({ latte: 'doceleitelatte', croissant: 'doceleitecroissant' }[d.item]);
+        setHeld({ latte: 'honeylatte', croissant: 'wafflehoney' }[d.item]);
         say('Pronto! Entregue no prato do cliente.');
-      } else if (!d.state) say('Doce de leite precisa de latte ou croissant na mão.');
+      } else if (!d.state) say('Mel precisa de latte ou croissant na mão.');
       break;
     }
     case 'serve': {
@@ -305,8 +305,8 @@ function updateStation(s, dt, t, doneAt, burnAt) {
     if (d.t >= doneAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
-      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'doceleite' ? { latte: 'doceleitelatte', croissant: 'doceleitecroissant' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
-      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'doceleite' ? 'Doce de leite pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno antes de queimar.');
+      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', croissant: 'wafflehoney' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
+      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno antes de queimar.');
     }
   } else if (d.state === 'done' && burnAt) {
     d.t += dt;
@@ -373,7 +373,7 @@ function tick() {
     updateStation(milkSt, dt, t, 3, 0);
     updateStation(ovenSt, dt, t, 5, 6);
     updateStation(chocoSt, dt, t, 2.5, 0);
-    updateStation(doceLeiteSt, dt, t, 2.5, 0);
+    updateStation(honeySt, dt, t, 2.5, 0);
     ovenGlass.material.emissive.setHex(ovenSt.data.state === 'baking' ? 0xff6a00 : 0x000000);
     ovenGlass.material.emissiveIntensity = 0.6;
 

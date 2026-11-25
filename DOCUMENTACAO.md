@@ -48,11 +48,11 @@ Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `np
 - Mocha Latte: Latte → Chocolate.
 - Choco Croissant: Croissant → Chocolate.
 
-**Receitas extras (nível 3, estação Doce de Leite, 2,5s)**
-- Doce de Leite Latte: Latte → Doce de Leite.
-- Doce de Leite Croissant: Croissant → Doce de Leite.
+**Receitas extras (nível 3, estação Mel, 2,5s)**
+- Honey Latte: Latte → Mel.
+- Waffle com Mel: Croissant → Mel.
 
-No nível 3, os clientes podem pedir qualquer uma das 8 receitas (as 6 dos níveis 1-2 mais as 2 novas de Doce de Leite), não só as novas.
+No nível 3, os clientes podem pedir qualquer uma das 8 receitas (as 6 dos níveis 1-2 mais as 2 novas de mel), não só as novas.
 
 **Servir:** o pedido só é entregue se o cozinheiro estiver diante de um prato com cliente esperando. Prato vazio: aviso e o item é mantido. Item errado no prato de um cliente: perde 1 coração.
 
@@ -69,7 +69,7 @@ O projeto planejado contém **5 níveis** no total. Atualmente, 3 estão complet
 | Spawn | a cada 6–10s | a cada 4–7s | a cada 3–5s |
 | Paciência | 55s | 50s | 45s |
 | Pratos | 3 | 6 | 7 |
-| Máquinas | básicas | "fancy" (cromo/dourado, cúpula de vidro, forno com visor brilhante, fonte de chocolate) | "fancy" com nova estação Doce de Leite |
+| Máquinas | básicas | "fancy" (cromo/dourado, cúpula de vidro, forno com visor brilhante, fonte de chocolate) | "deluxe" (rosé/mármore) + nova estação de Mel |
 
 Ao vencer um nível, o botão vira "Próximo nível". O nível liberado é salvo no storage do Bridge (`max_level`), junto com `best_score`.
 Para testes existe um **dropdown de nível** no HUD que reinicia o jogo no nível escolhido (remover antes de publicar).
@@ -85,7 +85,7 @@ Inicialização antes do jogo, idioma via plataforma, `best_score`/`max_level` n
 3. Integração do Bridge SDK e build com Vite.
 4. Ajustes por feedback: direção do movimento, etiquetas nas máquinas, painel de receitas, leite com barra de espera, soltar itens, cozinheiro/clientes de frente, pratos no balcão, animação de membros, balões com emoji, corações em vez de perder na hora, clique para andar, regra de entrega no prato certo, correções de pedidos.
 5. Nível 2 (novo ambiente, 5 clientes), novos pratos, máquinas fancy e seletor de nível para testes.
-6. Nível 3 (novo ambiente "Café Dourado", 7 clientes, estação Doce de Leite com 2 receitas, spawn e paciência mais desafiadores).
+6. Nível 3 (novo ambiente "Café Dourado", 7 clientes, estação de Mel com 2 receitas, máquinas "deluxe", spawn e paciência mais desafiadores).
 
 ## 7. Pendências para publicar na Playgama
 

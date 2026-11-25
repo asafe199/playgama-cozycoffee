@@ -126,15 +126,15 @@ function buildDipStation(g, toppingColor, toppingEmissive) {
 buildDipStation(chocoSt.g, 0x3a1a0c, 0x1a0a04);
 chocoSt.g.visible = false;
 
-// doce de leite station (level 3 only)
-export const doceLeiteSt = makeStation('doceleite', -5.3, SZ, 0.35, 'Doce de Leite');
-doceLeiteSt.cupSlot = new THREE.Group();
-doceLeiteSt.cupSlot.position.set(0, 1.4, 0.5);
-doceLeiteSt.g.add(doceLeiteSt.cupSlot);
-doceLeiteSt.bar.position.y = 2.8;
-doceLeiteSt.hidden = true;
-buildDipStation(doceLeiteSt.g, 0x8a5a2b, 0x2a1a08);
-doceLeiteSt.g.visible = false;
+// honey station (level 3 only)
+export const honeySt = makeStation('honey', -5.3, SZ, 0.35, 'Mel');
+honeySt.cupSlot = new THREE.Group();
+honeySt.cupSlot.position.set(0, 1.4, 0.5);
+honeySt.g.add(honeySt.cupSlot);
+honeySt.bar.position.y = 2.8;
+honeySt.hidden = true;
+buildDipStation(honeySt.g, 0xd98c1f, 0x7a4a0a);
+honeySt.g.visible = false;
 
 function dial(parent, x, y, z) {
   const r = cyl(0.17, 0.17, 0.05, gold, x, y, z, parent, 24); r.rotation.x = Math.PI / 2;
@@ -256,9 +256,9 @@ const chocoTag = makeTag(lang === 'pt' ? 'Chocolate' : 'Chocolate');
 chocoTag.position.set(chocoSt.pos.x, TAG_Y, chocoSt.pos.z);
 scene.add(chocoTag);
 
-const doceLeiteTag = makeTag(lang === 'pt' ? 'Doce de Leite' : 'Dulce de Leche');
-doceLeiteTag.position.set(doceLeiteSt.pos.x, TAG_Y, doceLeiteSt.pos.z);
-scene.add(doceLeiteTag);
+const honeyTag = makeTag(lang === 'pt' ? 'Mel' : 'Honey');
+honeyTag.position.set(honeySt.pos.x, TAG_Y, honeySt.pos.z);
+scene.add(honeyTag);
 
 export function applyStationLevel(n) {
   const lv = LEVELS[n - 1];
@@ -267,9 +267,9 @@ export function applyStationLevel(n) {
   chocoSt.g.visible = n >= 2;
   chocoSt.hidden = n < 2;
   chocoTag.visible = n >= 2;
-  doceLeiteSt.g.visible = n >= 3;
-  doceLeiteSt.hidden = n < 3;
-  doceLeiteTag.visible = n >= 3;
+  honeySt.g.visible = n >= 3;
+  honeySt.hidden = n < 3;
+  honeyTag.visible = n >= 3;
 
   const scale = n === 3 ? SERVE_SCALE : 1;
   counterBase.scale.x = scale;
