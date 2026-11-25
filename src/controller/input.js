@@ -11,8 +11,24 @@ import { G, P, BOUNDS, SLOTS } from '../model/state.js';
 
 const LEVEL_WORD = L({ pt: 'Nível', en: 'Level', es: 'Nivel', fr: 'Niveau' });
 const PAUSED_MSG = L({ pt: '⏸️ Jogo pausado', en: '⏸️ Game paused', es: '⏸️ Juego en pausa', fr: '⏸️ Jeu en pause' });
+const PAUSED_TITLE = L({ pt: 'Jogo pausado', en: 'Game paused', es: 'Juego en pausa', fr: 'Jeu en pause' });
+const RESUME_LABEL = L({ pt: 'Continuar', en: 'Resume', es: 'Continuar', fr: 'Continuer' });
+
+const pauseModal = document.createElement('div');
+pauseModal.style.cssText = 'display:none;position:fixed;inset:0;z-index:20;background:rgba(0,0,0,0.55);align-items:center;justify-content:center;text-align:center';
+pauseModal.innerHTML = `
+  <div style="background:#fff8ea;border:3px solid #d4af37;border-radius:20px;padding:28px 34px;max-width:90vw;box-shadow:0 20px 50px rgba(0,0,0,0.5)">
+    <div style="font:800 26px Georgia,serif;color:#4a3426;margin-bottom:18px">⏸️ ${PAUSED_TITLE}</div>
+    <button id="resumeBtn" style="font-size:18px;padding:10px 28px;border:0;border-radius:14px;cursor:pointer;background:#7a1f2e;color:#fff;font-weight:800">▶️ ${RESUME_LABEL}</button>
+  </div>`;
+document.body.appendChild(pauseModal);
+const resumeBtn = pauseModal.querySelector('#resumeBtn');
+resumeBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
 
 export const keys = new Set();
+export function closePauseUI() {
+  pauseModal.style.display = 'none';
+}
 
 export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
   const pauseBtn = hud.pause;
@@ -21,6 +37,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
     if (G.mode !== 'playing') return;
     const paused = toggleUserPaused();
     pauseBtn.textContent = paused ? '▶️' : '⏸️';
+    pauseModal.style.display = paused ? 'flex' : 'none';
     if (paused) {
       msgBeforePause = hud.msg.textContent;
       hud.msg.textContent = PAUSED_MSG;
@@ -28,6 +45,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
       hud.msg.textContent = msgBeforePause;
     }
   };
+  resumeBtn.addEventListener('click', togglePause);
   pauseBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
   pauseBtn.addEventListener('click', togglePause);
   addEventListener('keydown', (e) => {

@@ -15,7 +15,7 @@ import {
 } from '../view/stations.js';
 import { profile, loadProfile, submitScore } from '../model/profile.js';
 import { hud, menu, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
-import { setupInput, keys } from './input.js';
+import { setupInput, keys, closePauseUI } from './input.js';
 import { progressionStarted, progressionCompleted, progressionFailed } from './telemetry.js';
 import { setHostPaused, setUserPaused, isUserPaused } from './pause.js';
 
@@ -155,6 +155,7 @@ function resetGame() {
   Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
   setUserPaused(false);
+  closePauseUI();
   hud.pause.textContent = '⏸️';
   hud.pause.style.display = 'block';
   playRandomMusic();
@@ -475,6 +476,7 @@ function goMenu() {
   helperBtn.style.display = 'none';
   hud.pause.style.display = 'none';
   setUserPaused(false);
+  closePauseUI();
   hud.overlay.style.display = 'none';
   keys.clear();
   P.goal = P.pending = null;
