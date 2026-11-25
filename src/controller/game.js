@@ -68,7 +68,7 @@ function updateHelper(dt, t) {
   if (!helper.active) return;
   const h = helper;
   if (h.state === 'idle') {
-    const c = G.customers.find((x) => x.state === 'waiting' && !x.helped);
+    const c = G.customers.filter((x) => x.state === 'waiting' && !x.helped).sort((x, y) => x.patience - y.patience)[0];
     if (helperWalk(0, -4.0, dt, t) && c) { c.helped = true; h.target = c; h.state = 'cooking'; h.t = 0; h.step = 0; h.route = HELPER_ROUTES[c.type]; }
   } else if (h.state === 'cooking') {
     const c = h.target;
