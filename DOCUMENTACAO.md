@@ -56,7 +56,7 @@ No nível 3, os clientes podem pedir qualquer uma das 8 receitas (as 6 dos níve
 
 **Servir:** o pedido só é entregue se o cozinheiro estiver diante de um prato com cliente esperando. Prato vazio: aviso e o item é mantido. Item errado no prato de um cliente: perde 1 coração.
 
-**Vidas e pontuação:** 3 corações; erro de pedido ou cliente que perde a paciência custa 1; zero = game over. Cada entrega dá 10 pontos + bônus pela paciência restante.
+**Vidas e pontuação:** 3 corações (níveis 1-2) ou 4 (níveis 3-4); erro de pedido ou cliente que perde a paciência custa 1; zero = game over. Cada entrega dá 10 pontos + bônus pela paciência restante.
 
 ## 4. Níveis
 
@@ -100,6 +100,6 @@ Fluxo de publicação (após aprovação): `get_game_checklist` → `create_appl
 
 ## Atualização: níveis 3 e 4
 
-- **Nível 3 (Café Dourado):** máquinas deluxe, estação de Mel, 7 clientes, 5 corações, fileira de mesas e porta dourada.
-- **Nível 4 (Café Royal):** sala maior (mais profundidade, câmera com zoom out), 8 clientes simultâneos, 6 corações, novo pedido **Honey Espresso** (Espresso → Mel), chef com traje elegante (jaqueta preta com detalhes dourados, gravata-borboleta e toque alto), pilares de mármore, topiárias, duas fileiras de mesas e porta real com carpete violeta.
+- **Nível 3 (Café Dourado):** máquinas deluxe, estação de Mel, 7 clientes, 4 corações, fileira de mesas e porta dourada.
+- **Nível 4 (Café Royal):** sala maior (mais profundidade, câmera com zoom out), 8 clientes simultâneos, 4 corações, novo pedido **Honey Espresso** (Espresso → Mel), chef com traje elegante (jaqueta preta com detalhes dourados, gravata-borboleta e toque alto), pilares de mármore, topiárias, duas fileiras de mesas e porta real com carpete violeta.
 - O croissant não queima mais no forno.
