@@ -43,7 +43,7 @@ Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `np
 - Latte: Copo → Leite (3s, copo fica preso na máquina) → pegar; ou Espresso → Leite.
 - Croissant: Massa → Forno (5s; queima após 6s se não retirado → lixo).
 
-**Receitas extras (nível 2, estação Chocolate, 2,5s)**
+**Receitas extras (desde o nível 2, estação Chocolate, 2,5s)**
 - Mocha: Espresso → Chocolate.
 - Mocha Latte: Latte → Chocolate.
 - Choco Croissant: Croissant → Chocolate.
@@ -51,6 +51,8 @@ Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `np
 **Receitas extras (nível 3, estação Doce de Leite, 2,5s)**
 - Doce de Leite Latte: Latte → Doce de Leite.
 - Doce de Leite Croissant: Croissant → Doce de Leite.
+
+No nível 3, os clientes podem pedir qualquer uma das 8 receitas (as 6 dos níveis 1-2 mais as 2 novas de Doce de Leite), não só as novas.
 
 **Servir:** o pedido só é entregue se o cozinheiro estiver diante de um prato com cliente esperando. Prato vazio: aviso e o item é mantido. Item errado no prato de um cliente: perde 1 coração.
 

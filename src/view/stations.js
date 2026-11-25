@@ -1,7 +1,6 @@
 import * as THREE from 'three';
 import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black, white } from './materials.js';
-import { extras, extras3 } from './room.js';
 import { makeTag } from './hud.js';
 import { LEVELS, SLOT_SETS } from '../model/levels.js';
 import { lang } from '../model/i18n.js';
@@ -188,16 +187,13 @@ for (const [k, st] of Object.entries(fancyStations)) {
   st.fancy.traverse((o) => { if (o.isMesh) { o.castShadow = true; o.receiveShadow = true; } });
   st.g.add(st.fancy);
 }
-{
-  const t = makeTag(lang === 'pt' ? 'Chocolate' : 'Chocolate');
-  t.position.set(chocoSt.pos.x, TAG_Y, chocoSt.pos.z);
-  extras.add(t);
-}
-{
-  const t = makeTag(lang === 'pt' ? 'Doce de Leite' : 'Dulce de Leche');
-  t.position.set(doceLeiteSt.pos.x, TAG_Y, doceLeiteSt.pos.z);
-  extras3.add(t);
-}
+const chocoTag = makeTag(lang === 'pt' ? 'Chocolate' : 'Chocolate');
+chocoTag.position.set(chocoSt.pos.x, TAG_Y, chocoSt.pos.z);
+scene.add(chocoTag);
+
+const doceLeiteTag = makeTag(lang === 'pt' ? 'Doce de Leite' : 'Dulce de Leche');
+doceLeiteTag.position.set(doceLeiteSt.pos.x, TAG_Y, doceLeiteSt.pos.z);
+scene.add(doceLeiteTag);
 
 export function applyStationLevel(n) {
   const lv = LEVELS[n - 1];
@@ -205,6 +201,8 @@ export function applyStationLevel(n) {
   for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n >= 2; }
   chocoSt.g.visible = n >= 2;
   chocoSt.hidden = n < 2;
+  chocoTag.visible = n >= 2;
   doceLeiteSt.g.visible = n >= 3;
   doceLeiteSt.hidden = n < 3;
+  doceLeiteTag.visible = n >= 3;
 }

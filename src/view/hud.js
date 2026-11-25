@@ -31,7 +31,7 @@ export function makeTag(text) {
   c.beginPath(); c.roundRect(4, 4, 312, 82, 24); c.fill();
   c.lineWidth = 5; c.strokeStyle = '#c0392b'; c.stroke();
   c.fillStyle = '#4a3426';
-  c.font = `bold ${Array.from(text).length > 10 ? 26 : 40}px system-ui, sans-serif`;
+  c.font = `bold ${Array.from(text).length > 13 ? 26 : 40}px system-ui, sans-serif`;
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.fillText(text, 160, 48);
   const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(cv), depthTest: false }));
@@ -72,10 +72,10 @@ guide.innerHTML = lang === 'pt'
 document.body.appendChild(guide);
 
 export function refreshGuide() {
-  const l2 = level === 2;
+  const l2 = level >= 2, l3 = level >= 3;
   guide.innerHTML = lang === 'pt'
-    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno (não queime!) → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '')
-    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven (don\'t burn!) → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '');
+    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno (não queime!) → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Doce de Leite Latte: Latte → Doce de Leite<br>Doce de Leite Croissant: Croissant → Doce de Leite' : '')
+    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven (don\'t burn!) → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Doce de Leite Latte: Latte → Doce de Leite<br>Doce de Leite Croissant: Croissant → Doce de Leite' : '');
 }
 
 hud.act.textContent = tr('AÇÃO');
