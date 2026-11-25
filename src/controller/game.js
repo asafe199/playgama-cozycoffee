@@ -16,6 +16,7 @@ import {
 import { profile, loadProfile, submitScore } from '../model/profile.js';
 import { hud, menu, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
+import { progressionStarted, progressionCompleted, progressionFailed } from './telemetry.js';
 
 // ---------- player ----------
 const player = makePerson(0x2f6f8f, 0xf1c27d, 0x2b1d14, true);
@@ -163,10 +164,12 @@ function resetGame() {
   hud.overlay.style.display = 'none';
   say('Pegue um copo, passe na máquina e entregue o pedido certo!');
   bridge.platform.sendMessage('level_started');
+  progressionStarted(G.level);
   renderHud();
 }
 
-function endGame(win, reason) {
+function endGame(win, reason, failKey = 'walkouts') {
+  const playedLevel = G.level;
   G.mode = 'over';
   helperBtn.style.display = 'none';
   bridge.platform.sendMessage(win ? 'level_completed' : 'level_failed');
@@ -182,6 +185,9 @@ function endGame(win, reason) {
   hud.title.textContent = tr(win ? 'Expediente concluído! 🌟' : 'Game over 💥');
   const maxH = LEVELS[G.level - 1].hearts;
   const earned = win ? (G.hearts >= maxH ? 3 : G.hearts * 2 >= maxH ? 2 : 1) : 0;
+  const duration = DAY - Math.max(0, G.time);
+  if (win) progressionCompleted(playedLevel, { score: G.score, stars: earned, hearts_left: G.hearts, duration_sec: duration });
+  else progressionFailed(playedLevel, { reason: failKey, score: G.score, duration_sec: duration });
   hud.stars.innerHTML = win ? [0, 1, 2].map((i) => `<span class="${i < earned ? '' : 'off'}" style="animation-delay:${0.25 + i * 0.18}s">⭐</span>`).join('') : '';
   hud.text.textContent = reason;
   const tile = (v, l, cls = '') => `<div class="stat ${cls}"><b>${v}</b><small>${l}</small></div>`;
@@ -434,7 +440,7 @@ function interact(s) {
         target.bubble.visible = false;
         target.xBubble.visible = true;
         target.wrongFlash = 1.2;
-        if (G.hearts <= 0) endGame(false, L({ pt: 'Você errou pedidos demais.', en: 'Too many wrong orders.', es: 'Demasiados pedidos equivocados.', fr: 'Trop de mauvaises commandes.' }));
+        if (G.hearts <= 0) endGame(false, L({ pt: 'Você errou pedidos demais.', en: 'Too many wrong orders.', es: 'Demasiados pedidos equivocados.', fr: 'Trop de mauvaises commandes.' }), 'wrong_orders');
         break;
       }
       const bonus = Math.round((target.patience / target.max) * 10);
@@ -458,6 +464,7 @@ function dropHeld() {
 }
 
 function goMenu() {
+  if (G.mode === 'playing') progressionFailed(G.level, { reason: 'abandoned', score: G.score, duration_sec: DAY - Math.max(0, G.time) });
   G.mode = 'over';
   stopMusic();
   helperBtn.style.display = 'none';
@@ -642,4 +649,4 @@ bridge.storage
   .then(() => menu.refresh())
   .then(tick);
 
-if (new URLSearchParams(location.search).has('debug')) window.__cafe = { applyLevel, G, P, stations, interact, resetGame, keys, setHeld, spawnCustomer, helper };
+if (new URLSearchParams(location.search).has('debug')) window.__cafe = { applyLevel, G, P, stations, interact, resetGame, keys, setHeld, spawnCustomer, helper, endGame, goMenu, bridge };
