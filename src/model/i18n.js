@@ -3,6 +3,8 @@ import bridge from '@playgama/bridge';
 export const lang = String(bridge.platform?.language || 'en').toLowerCase().startsWith('pt') ? 'pt' : 'en';
 
 const EN = {
+  'Café Noir': 'Noir Café',
+  'Café Dourado': 'Golden Café',
   'Pegue um copo, passe na máquina e entregue o pedido certo!': 'Grab a cup, use the machine and serve the right order!',
   'Expediente concluído! 🌟': 'Shift complete! 🌟',
   'Game over 💥': 'Game over 💥',

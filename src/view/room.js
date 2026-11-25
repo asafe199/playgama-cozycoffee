@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { scene, add, box, cyl, noShadow, M } from './scene.js';
 import { wood, woodDark, metal, black } from './materials.js';
 import { THEMES } from '../model/levels.js';
+import { tr } from '../model/i18n.js';
 
 const brick = M(0xb5654a, { roughness: 0.9 });
 const wallMat = M(0xf0e8dc, { roughness: 0.95 });
@@ -105,8 +106,8 @@ scene.add(extras);
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.shadowColor = '#ff4fa3'; c.shadowBlur = 28;
   c.fillStyle = '#ffd6ec';
-  c.fillText('CAFÉ NOIR', 256, 82);
-  const sign = noShadow(add(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.3, extras));
+  c.fillText(tr('Café Noir').toUpperCase(), 256, 82);
+  const sign = noShadow(add(new THREE.PlaneGeometry(2.7, 0.84), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.5, extras));
   sign.rotation.y = Math.PI / 2;
   // floor lamp
   cyl(0.04, 0.04, 2.6, black, -5.3, 1.3, 2.9, extras, 8);
@@ -163,8 +164,8 @@ scene.add(extras3);
   c.textAlign = 'center'; c.textBaseline = 'middle';
   c.shadowColor = '#e0a848'; c.shadowBlur = 28;
   c.fillStyle = '#fff3d6';
-  c.fillText('CAFÉ DOURADO', 256, 82);
-  const sign = noShadow(add(new THREE.PlaneGeometry(3.4, 1.06), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.3, extras3));
+  c.fillText(tr('Café Dourado').toUpperCase(), 256, 82);
+  const sign = noShadow(add(new THREE.PlaneGeometry(2.7, 0.84), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.5, extras3));
   sign.rotation.y = Math.PI / 2;
   // floor lamp
   cyl(0.04, 0.04, 2.6, black, -5.3, 1.3, 2.9, extras3, 8);
