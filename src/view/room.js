@@ -312,7 +312,7 @@ box(3.6, 0.12, 1.4, top, 7.2, 1.26, -5.3, bigRoom);
 for (let i = 0; i < 8; i++) {
   const m = M(0xd8d3c8, { roughness: 0.3 });
   floorMats.push(m);
-  box(12, 0.16, 0.5, m, 0, -0.08, 6.5 + i * 0.5, bigRoom, 0.01);
+  box(12, 0.16, 0.5, m, 0, -0.08, 6.25 + i * 0.5, bigRoom, 0.01);
 }
 box(0.3, WH, 4, wallMat, -6.15, WH / 2, 8.0, bigRoom);
 export const extras4 = new THREE.Group();
