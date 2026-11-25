@@ -1,3 +1,4 @@
+import { playRandomMusic, stopMusic, setMusicPaused } from './music.js';
 import * as THREE from 'three';
 import bridge from '@playgama/bridge';
 import { tr, L } from '../model/i18n.js';
@@ -151,6 +152,7 @@ function resetGame() {
   if (G.level === 1) G.total = G.totalServed = 0;
   Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
+  playRandomMusic();
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
   for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt, creamSt, waffleSt]) {
@@ -457,6 +459,7 @@ function dropHeld() {
 
 function goMenu() {
   G.mode = 'over';
+  stopMusic();
   helperBtn.style.display = 'none';
   hud.overlay.style.display = 'none';
   keys.clear();
@@ -619,8 +622,10 @@ function tick() {
   requestAnimationFrame(tick);
 }
 
-// The game has no audio yet; pause is the only host state to honor.
-bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED, (p) => (G.paused = !!p));
+bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED, (p) => {
+  G.paused = !!p;
+  setMusicPaused(p);
+});
 
 bridge.storage
   .get(['best_score', 'max_level'])
