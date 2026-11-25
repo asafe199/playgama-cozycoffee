@@ -134,10 +134,17 @@ howBox.innerHTML = pt
 const backBtn = document.createElement('button');
 backBtn.textContent = pt ? 'Voltar' : 'Back';
 backBtn.style.cssText = btnCss + ';display:none;background:#f3e9ff;box-shadow:0 4px 0 #9b86c9';
-const showMain = (on) => [nickInput, startBtn, howBtn, rankBtn].forEach((b) => (b.style.display = on ? 'block' : 'none'));
+const showMain = (on) => [startBtn, howBtn, rankBtn].forEach((b) => (b.style.display = on ? 'block' : 'none'));
 howBtn.addEventListener('click', () => {
   howBox.style.display = 'block'; backBtn.style.display = 'block';
   showMain(false);
+});
+startBtn.addEventListener('click', () => {
+  showMain(false);
+  backBtn.style.display = 'block';
+  nickInput.value = profile.nick;
+  nickStep.forEach((e) => (e.style.display = 'block'));
+  nickInput.focus();
 });
 rankBtn.addEventListener('click', () => {
   renderBoard();
@@ -146,15 +153,24 @@ rankBtn.addEventListener('click', () => {
 });
 backBtn.addEventListener('click', () => {
   howBox.style.display = 'none'; backBtn.style.display = 'none'; board.style.display = 'none';
+  nickStep.forEach((e) => (e.style.display = 'none'));
   showMain(true);
 });
+const nickLabel = document.createElement('div');
+nickLabel.textContent = pt ? 'Como devemos te chamar?' : 'What should we call you?';
+nickLabel.style.cssText = 'display:none;font-size:18px;color:#ffd97a;font-weight:700';
+const playBtn = document.createElement('button');
+playBtn.textContent = pt ? 'Jogar' : 'Play';
+playBtn.style.cssText = btnCss + ';display:none';
 const nickInput = document.createElement('input');
 nickInput.maxLength = 12;
 nickInput.placeholder = pt ? 'Seu apelido' : 'Your nickname';
 nickInput.autocomplete = 'off';
-nickInput.style.cssText = 'font-size:18px;font-weight:700;text-align:center;padding:11px 12px;width:min(260px,70vw);box-sizing:border-box;border-radius:14px;border:2px solid #ffd97a88;background:#ffffff1c;color:#fff;outline:none';
+nickInput.style.cssText = 'display:none;font-size:18px;font-weight:700;text-align:center;padding:11px 12px;width:min(260px,70vw);box-sizing:border-box;border-radius:14px;border:2px solid #ffd97a88;background:#ffffff1c;color:#fff;outline:none';
 nickInput.addEventListener('keydown', (e) => e.stopPropagation());
 nickInput.addEventListener('keyup', (e) => e.stopPropagation());
+nickInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') playBtn.click(); });
+const nickStep = [nickLabel, nickInput, playBtn];
 const board = document.createElement('div');
 board.style.cssText = 'display:none;width:min(320px,86vw);box-sizing:border-box;padding:10px 14px;border-radius:14px;background:#ffffff14;border:1px solid #ffffff30;text-align:left;font-size:15px';
 const MEDALS = ['🥇', '🥈', '🥉', '4.', '5.'];
@@ -169,6 +185,6 @@ function refreshMenu() {
   renderBoard();
 }
 renderBoard();
-menuRoot.append(menuSub, menuTitle, nickInput, startBtn, howBtn, rankBtn, board, howBox, backBtn);
+menuRoot.append(menuSub, menuTitle, nickLabel, nickInput, playBtn, startBtn, howBtn, rankBtn, board, howBox, backBtn);
 document.body.appendChild(menuRoot);
-export const menu = { root: menuRoot, startBtn, nickInput, refresh: refreshMenu };
+export const menu = { root: menuRoot, startBtn: playBtn, nickInput, refresh: refreshMenu };
