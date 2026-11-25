@@ -78,7 +78,7 @@ function updateHelper(dt, t) {
     const c = h.target;
     if (c.state !== 'waiting') { if (h.item) h.mesh.remove(h.item); h.item = null; h.state = 'idle'; return; }
     const st = stations[h.route[h.step]];
-    const arrived = helperWalk(THREE.MathUtils.clamp(st.pos.x, BOUNDS.minX, BOUNDS.maxX), st.key === 'waffle' && level < 4 ? -3.0 : -4.0, dt, t);
+    const arrived = helperWalk(THREE.MathUtils.clamp(st.key === 'waffle' && level < 4 ? st.pos.x + 0.7 : st.pos.x, BOUNDS.minX, BOUNDS.maxX), st.key === 'waffle' && level < 4 ? -3.0 : -4.0, dt, t);
     if (arrived) {
       h.mesh.rotation.y = Math.atan2(0, st.key === 'waffle' ? -1 : -1);
       h.t += dt;
@@ -252,7 +252,7 @@ function nearest() {
   let best = null, bd = 2.5;
   for (const s of Object.values(stations)) {
     if (s.key === 'serve' || s.hidden) continue;
-    const d = distTo(s) * (s.key === 'waffle' ? 0.6 : 1);
+    const d = distTo(s) * (s.key === 'waffle' ? (G.level < 4 ? 0.3 : 0.6) : 1);
     if (d < bd) { bd = d; best = s; }
   }
   if (best && P.pos.z < -2.95) return best;
