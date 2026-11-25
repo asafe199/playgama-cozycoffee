@@ -136,6 +136,49 @@ export function dressChef(g, fancy, royal = false) {
   g.userData.shirt.color.setHex(royal ? 0xc0152f : fancy ? 0x15151c : g.userData.shirtBase);
 }
 
+const gold = M(0xd9ad3a, { roughness: 0.3, metalness: 0.7 });
+
+// Adds a small, instantly-readable accessory set to a customer built by makePerson, inspired by
+// the storybook cast of the Royal Coffee key art (princess, wizard, palace guard).
+export function addCostume(g, kind) {
+  const head = g.userData.head;
+  if (!head) return;
+  if (kind === 'princess') {
+    const crown = new THREE.Group();
+    crown.position.set(0, 0.52, 0);
+    cyl(0.17, 0.19, 0.08, gold, 0, 0, 0, crown, 14);
+    for (const a of [-0.4, 0, 0.4]) {
+      const spike = add(new THREE.ConeGeometry(0.05, 0.12, 4), gold, Math.sin(a) * 0.14, 0.1, Math.cos(a) * 0.14, crown);
+      spike.rotation.y = a;
+    }
+    head.add(crown);
+  } else if (kind === 'wizard') {
+    const hat = new THREE.Group();
+    hat.position.set(0, 0.5, 0);
+    const hatMat = M(0x3b3a7a, { roughness: 0.8 });
+    cyl(0.32, 0.3, 0.05, hatMat, 0, 0, 0, hat, 16);
+    const cone = add(new THREE.ConeGeometry(0.16, 0.5, 14), hatMat, 0, 0.3, 0, hat);
+    cone.rotation.z = 0.12;
+    add(new THREE.SphereGeometry(0.05, 10, 10), gold, 0.05, 0.56, 0, hat);
+    head.add(hat);
+    const beard = M(0xf3f3f3, { roughness: 0.9 });
+    const chin = add(new THREE.SphereGeometry(0.14, 10, 8), beard, 0, 0.05, 0.22, head);
+    chin.scale.set(0.9, 1.3, 0.8);
+  } else if (kind === 'guard') {
+    const hat = new THREE.Group();
+    hat.position.set(0, 0.5, 0);
+    const navy = M(0x1c2a4a, { roughness: 0.6 });
+    cyl(0.3, 0.3, 0.3, navy, 0, 0.1, 0, hat, 16);
+    cyl(0.31, 0.31, 0.05, gold, 0, -0.02, 0, hat, 16);
+    add(new THREE.ConeGeometry(0.04, 0.22, 8), M(0xb3122e), 0, 0.36, 0, hat);
+    head.add(hat);
+    const stache = add(new THREE.BoxGeometry(0.2, 0.05, 0.06), M(0x2b1d14), 0, 0.05, 0.25, head);
+    stache.rotation.z = 0;
+    const sash = add(new THREE.BoxGeometry(0.1, 0.9, 0.44), gold, -0.1, 1.1, 0.01, g);
+    sash.rotation.z = 0.5;
+  }
+}
+
 export function swayHair(g, moving, t) {
   const h = g.userData.hair;
   if (!h) return;

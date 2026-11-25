@@ -331,14 +331,7 @@ scene.add(extras4);
   sign.rotation.y = Math.PI / 2;
   sign.scale.setScalar(1.25);
   const goldM = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
-  const marble = M(0xf1ece2, { roughness: 0.2 });
   const leaf = M(0x2f7a4a, { roughness: 0.8 });
-  // marble pillars with gold capitals
-  for (const [px, pz] of [[-5.5, 3.2], [-5.5, 10.0], [5.6, 6.2], [5.6, 10.0]]) {
-    cyl(0.28, 0.32, WH - 0.4, marble, px, (WH - 0.4) / 2, pz, extras4, 24);
-    cyl(0.4, 0.4, 0.15, goldM, px, 0.08, pz, extras4, 24);
-    cyl(0.4, 0.4, 0.15, goldM, px, WH - 0.4, pz, extras4, 24);
-  }
   // topiaries along the left wall
   for (const tz of [5.8, 7.4, 9.0]) {
     cyl(0.28, 0.2, 0.5, goldM, -5.4, 0.25, tz, extras4, 16);

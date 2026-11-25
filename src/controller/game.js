@@ -8,7 +8,7 @@ import { LEVELS, SLOT_SETS } from '../model/levels.js';
 import { G, P, BOUNDS, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick } from '../model/state.js';
 import { scene, renderer, camera, setZoom } from '../view/scene.js';
 import { makeItem } from '../view/items.js';
-import { makePerson, animatePerson, dressChef } from '../view/people.js';
+import { makePerson, animatePerson, dressChef, addCostume } from '../view/people.js';
 import { applyRoomTheme, animateDiners } from '../view/room.js';
 import {
   stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, creamSt, waffleSt, ovenGlass, applyStationLevel,
@@ -237,11 +237,17 @@ function endGame(win, reason, failKey = 'walkouts') {
 }
 
 const doorX = () => (level >= 5 ? 11.7 : level >= 4 ? 9.4 : 6);
+const COSTUME_LOOKS = { princess: { shirt: 0xe79bc0, female: true }, wizard: { shirt: 0x3b3a7a, female: false }, guard: { shirt: 0x1c2a4a, female: false } };
+const COSTUME_KEYS = Object.keys(COSTUME_LOOKS);
 function spawnCustomer() {
   const slot = SLOTS.findIndex((_, i) => !G.customers.some((c) => c.slot === i));
   if (slot < 0) return;
   const type = pick(ORDER_POOLS[level - 1]);
-  const mesh = makePerson(pick(shirtC), pick(skinC), pick(hairC), false, Math.random() < 0.5);
+  // one in three customers is a storybook visitor (princess, wizard or guard) for variety
+  const costume = Math.random() < 0.3 ? pick(COSTUME_KEYS) : null;
+  const look = costume && COSTUME_LOOKS[costume];
+  const mesh = makePerson(look ? look.shirt : pick(shirtC), pick(skinC), pick(hairC), false, look ? look.female : Math.random() < 0.5);
+  if (costume) addCostume(mesh, costume);
   mesh.position.set(doorX(), 0, 4);
   const bubble = makeBubble(RECIPES[type].icon);
   bubble.position.y = 3.0;
