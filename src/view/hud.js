@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import { lang, tr } from '../model/i18n.js';
 import { level, G } from '../model/state.js';
 import { RECIPES } from '../model/recipes.js';
+import { LEVELS } from '../model/levels.js';
 
 const $ = (id) => document.getElementById(id);
 export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
@@ -11,7 +12,7 @@ export function say(t) { hud.msg.textContent = tr(t); }
 export function renderHud() {
   hud.score.textContent = G.score;
   hud.time.textContent = Math.max(0, Math.ceil(G.time));
-  hud.hearts.textContent = '❤️'.repeat(G.hearts) + '🖤'.repeat(3 - G.hearts);
+  hud.hearts.textContent = '❤️'.repeat(G.hearts) + '🖤'.repeat(Math.max(0, LEVELS[G.level - 1].hearts - G.hearts));
   hud.tickets.innerHTML = G.customers
     .filter((c) => c.state === 'waiting')
     .map((c) => {

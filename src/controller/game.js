@@ -51,7 +51,7 @@ function resetGame() {
   G.customers = [];
   applyLevel(G.level);
   hud.lvl.value = String(G.level);
-  Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: 3, nextSpawn: 1, served: 0 });
+  Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
