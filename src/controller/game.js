@@ -18,6 +18,81 @@ import { setupInput, keys } from './input.js';
 const player = makePerson(0x2f6f8f, 0xf1c27d, 0x2b1d14, true);
 scene.add(player);
 
+// ---------- level 4 helper (auto-cooks orders) ----------
+const HELPER_AT = 100;
+const helper = { mesh: makePerson(0xc2185b, 0xe0ac69, 0x2b1d14, true), active: false, state: 'idle', target: null, t: 0, item: null, pos: new THREE.Vector3() };
+helper.mesh.visible = false;
+scene.add(helper.mesh);
+const helperBtn = document.createElement('button');
+helperBtn.className = 'pill';
+helperBtn.style.cssText = 'position:fixed;left:50%;top:64px;transform:translateX(-50%);border:2px solid #d4af37;cursor:pointer;font-size:15px;display:none;z-index:5';
+helperBtn.textContent = tr('Chamar ajudante 🧑‍🍳');
+document.body.appendChild(helperBtn);
+helperBtn.addEventListener('pointerdown', (e) => {
+  e.stopPropagation();
+  if (G.mode !== 'playing' || level < 4 || helper.active || G.time > HELPER_AT) return;
+  helper.active = true;
+  helper.state = 'idle';
+  helper.pos.set(4.5, 0, -3.4);
+  helper.mesh.visible = true;
+  helperBtn.style.display = 'none';
+  say('O ajudante chegou para ajudar o chefe!');
+});
+
+function resetHelper() {
+  if (helper.item) helper.mesh.remove(helper.item);
+  Object.assign(helper, { active: false, state: 'idle', target: null, t: 0, item: null });
+  helper.mesh.visible = false;
+  helperBtn.style.display = 'none';
+}
+
+function helperWalk(x, z, dt, t) {
+  const d = new THREE.Vector3(x, 0, z).sub(helper.pos);
+  const moving = d.length() > 0.1;
+  if (moving) {
+    helper.pos.addScaledVector(d.normalize(), 4.2 * dt);
+    helper.mesh.rotation.y = Math.atan2(d.x, d.z);
+  }
+  helper.mesh.position.set(helper.pos.x, moving ? Math.abs(Math.sin(t * 14)) * 0.05 : 0, helper.pos.z);
+  animatePerson(helper.mesh, moving, t, !!helper.item);
+  return !moving;
+}
+
+function updateHelper(dt, t) {
+  helperBtn.style.display = !helper.active && level >= 4 && G.time <= HELPER_AT ? 'block' : 'none';
+  if (!helper.active) return;
+  const h = helper;
+  if (h.state === 'idle') {
+    const c = G.customers.find((x) => x.state === 'waiting' && !x.helped);
+    if (helperWalk(0, -4.0, dt, t) && c) { c.helped = true; h.target = c; h.state = 'cooking'; h.t = 0; }
+  } else if (h.state === 'cooking') {
+    helperWalk(SLOTS[h.target.slot] * 0.3, -4.2, dt, t);
+    h.t += dt;
+    if (h.target.state !== 'waiting') { h.state = 'idle'; return; }
+    if (h.t >= 4.5) {
+      h.item = makeItem(h.target.type);
+      h.item.position.set(0, 1.05, 0.62);
+      h.mesh.add(h.item);
+      h.state = 'delivering';
+    }
+  } else if (h.state === 'delivering') {
+    const c = h.target;
+    if (c.state !== 'waiting') { h.mesh.remove(h.item); h.item = null; h.state = 'idle'; return; }
+    if (helperWalk(SLOTS[c.slot], -2.3, dt, t)) {
+      const bonus = Math.round((c.patience / c.max) * 10);
+      G.score += 10 + bonus;
+      G.served++;
+      c.state = 'leaving';
+      c.bubble.visible = false;
+      c.xBubble.visible = false;
+      h.mesh.remove(h.item);
+      h.item = null;
+      h.state = 'idle';
+      renderHud();
+    }
+  }
+}
+
 function setHeld(type) {
   if (P.heldMesh) player.remove(P.heldMesh);
   P.held = type;
@@ -52,6 +127,7 @@ function resetGame() {
   G.customers.forEach((c) => scene.remove(c.mesh));
   G.customers = [];
   applyLevel(G.level);
+  resetHelper();
   hud.lvl.value = String(G.level);
   Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
@@ -70,6 +146,7 @@ function resetGame() {
 
 function endGame(win, reason) {
   G.mode = 'over';
+  helperBtn.style.display = 'none';
   bridge.platform.sendMessage(win ? 'level_completed' : 'level_failed');
   const isBest = G.score > G.best;
   if (isBest) {
@@ -363,6 +440,7 @@ function tick() {
     updateStation(ovenSt, dt, 5);
     updateStation(chocoSt, dt, 2.5);
     updateStation(honeySt, dt, 2.5);
+    updateHelper(dt, t);
     ovenGlass.material.emissive.setHex(ovenSt.data.state === 'baking' ? 0xff6a00 : 0x000000);
     ovenGlass.material.emissiveIntensity = 0.6;
 
@@ -443,4 +521,4 @@ bridge.storage
   .catch(() => {})
   .then(tick);
 
-if (new URLSearchParams(location.search).has('debug')) window.__cafe = { applyLevel, G, P, stations, interact, resetGame, keys, setHeld, spawnCustomer };
+if (new URLSearchParams(location.search).has('debug')) window.__cafe = { applyLevel, G, P, stations, interact, resetGame, keys, setHeld, spawnCustomer, helper };

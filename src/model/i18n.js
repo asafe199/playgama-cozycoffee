@@ -6,6 +6,8 @@ const EN = {
   'Café Noir': 'Noir Café',
   'Café Dourado': 'Golden Café',
   'Café Royal': 'Royal Café',
+  'Chamar ajudante 🧑‍🍳': 'Call helper 🧑‍🍳',
+  'O ajudante chegou para ajudar o chefe!': 'The helper arrived to assist the chef!',
   'Pegue um copo, passe na máquina e entregue o pedido certo!': 'Grab a cup, use the machine and serve the right order!',
   'Expediente concluído! 🌟': 'Shift complete! 🌟',
   'Game over 💥': 'Game over 💥',
