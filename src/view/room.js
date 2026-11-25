@@ -31,14 +31,17 @@ for (let k = 0; k < 2; k++) {
 add(new THREE.CylinderGeometry(2.4, 2.4, 0.03, 48), rugMat, 0, 0.02, 1.2);
 
 function pendant(x, z, y = 3.4) {
-  noShadow(cyl(0.01, 0.01, WH - y, black, x, (WH + y) / 2, z, scene, 6));
-  noShadow(add(new THREE.ConeGeometry(0.4, 0.4, 28, 1, true), M(0x2a2c30, { metalness: 0.6, side: THREE.DoubleSide }), x, y, z));
-  noShadow(add(new THREE.SphereGeometry(0.14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffd98a }), x, y - 0.12, z));
+  const g = new THREE.Group();
+  scene.add(g);
+  noShadow(cyl(0.01, 0.01, WH - y, black, x, (WH + y) / 2, z, g, 6));
+  noShadow(add(new THREE.ConeGeometry(0.4, 0.4, 28, 1, true), M(0x2a2c30, { metalness: 0.6, side: THREE.DoubleSide }), x, y, z, g));
+  noShadow(add(new THREE.SphereGeometry(0.14, 16, 16), new THREE.MeshBasicMaterial({ color: 0xffd98a }), x, y - 0.12, z, g));
   const l = new THREE.PointLight(0xffc880, 6, 7, 2);
   l.position.set(x, y - 0.2, z);
-  scene.add(l);
+  g.add(l);
+  return g;
 }
-pendant(0, 1.2);
+const basicPendant = pendant(0, 1.2);
 
 function shelf(x, y) {
   box(3.2, 0.08, 0.45, woodDark, x, y, -5.9);
@@ -171,8 +174,28 @@ scene.add(extras3);
     cyl(0.28, 0.28, 0.08, M(0xc9952e, { roughness: 0.5 }), -5.0, 0.8, z, extras3, 20);
     cyl(0.04, 0.04, 0.8, metal, -5.0, 0.4, z, extras3, 8);
   }
-  // café table for ambient seating
-  cafeTable(-4.0, 2.6, extras3);
+  // organized lounge: one row of tables at the front, each with its own lamp
+  const lampMat = new THREE.MeshBasicMaterial({ color: 0xffe2a8 });
+  const brass = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
+  const shade = M(0xe8d5a8, { roughness: 0.3, metalness: 0.7, side: THREE.DoubleSide });
+  const hang = (x, z, y, r) => {
+    noShadow(cyl(0.012, 0.012, WH - y, brass, x, (WH + y) / 2, z, extras3, 6));
+    noShadow(add(new THREE.CylinderGeometry(r * 0.55, r, r * 0.8, 24, 1, true), shade, x, y, z, extras3));
+    noShadow(cyl(r * 0.5, r * 0.5, 0.03, brass, x, y + r * 0.4, z, extras3, 16));
+    noShadow(add(new THREE.SphereGeometry(r * 0.38, 16, 16), lampMat, x, y - r * 0.25, z, extras3));
+  };
+  for (const tx of [-3.6, 0, 3.6]) {
+    cafeTable(tx, 4.6, extras3);
+    hang(tx, 4.6, 2.9, 0.42);
+    const tl = new THREE.PointLight(0xffd08a, 3, 4, 2);
+    tl.position.set(tx, 2.6, 4.6);
+    extras3.add(tl);
+  }
+  // chandelier row above the serving counter and customers
+  for (const cx of [-3.6, -1.2, 1.2, 3.6]) hang(cx, 0.2, 3.3, 0.36);
+  // gold rug border
+  const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.04, 8, 64), brass, 0, 0.05, 1.2, extras3));
+  border.rotation.x = Math.PI / 2;
 }
 
 export function applyRoomTheme(n) {
@@ -187,4 +210,5 @@ export function applyRoomTheme(n) {
   extras.visible = n === 2;
   extras3.visible = n === 3;
   greenPlants.forEach((p) => (p.visible = n !== 3));
+  basicPendant.visible = n !== 3;
 }

@@ -186,54 +186,71 @@ const fancyBuilders = {
     for (const x of [-0.5, 0, 0.5]) { const k = cyl(0.07, 0.07, 0.06, gold, x, 2.2, 0.46, g, 14); k.rotation.x = Math.PI / 2; }
   },
 };
+const copper = M(0xb87333, { roughness: 0.25, metalness: 0.95 });
+const dome = (r, mat, x, y, z, g) => add(new THREE.SphereGeometry(r, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2), mat, x, y, z, g);
 const deluxeBuilders = {
   cups(st, g) {
-    box(0.7, 0.1, 0.7, roseGold, 0, 1.4, 0, g, 0.03);
-    cyl(0.33, 0.33, 0.9, warmGlass, 0, 1.9, 0, g, 24);
-    cyl(0.36, 0.36, 0.06, roseGold, 0, 2.38, 0, g, 24);
-    for (let i = 0; i < 4; i++) cyl(0.17, 0.12, 0.28, white, 0, 1.58 + i * 0.28, 0, g, 16);
-    cyl(0.38, 0.38, 0.02, champagne, 0, 1.46, 0, g, 32);
+    cyl(0.4, 0.44, 0.1, roseGold, 0, 1.4, 0, g, 32);
+    cyl(0.36, 0.36, 0.02, champagne, 0, 1.47, 0, g, 32);
+    cyl(0.33, 0.33, 0.9, warmGlass, 0, 1.95, 0, g, 24);
+    dome(0.34, warmGlass, 0, 2.4, 0, g);
+    cyl(0.03, 0.03, 0.12, roseGold, 0, 2.77, 0, g, 8);
+    add(new THREE.SphereGeometry(0.06, 12, 10), amberGlow, 0, 2.85, 0, g);
+    for (let i = 0; i < 4; i++) cyl(0.17, 0.12, 0.28, white, 0, 1.62 + i * 0.28, 0, g, 16);
   },
   espresso(st, g) {
-    box(1.5, 0.85, 0.75, marble, 0, 1.78, 0, g, 0.08);
-    box(1.56, 0.1, 0.8, roseGold, 0, 2.24, 0, g, 0.04);
-    box(1.56, 0.08, 0.8, roseGold, 0, 1.38, 0, g, 0.03);
-    for (const x of [-0.78, 0.78]) box(0.08, 0.85, 0.7, champagne, x, 1.78, 0, g, 0.03);
-    dial(g, 0, 2.0, 0.39);
-    for (const gx of [-0.45, 0.45]) {
-      cyl(0.12, 0.12, 0.14, roseGold, gx, 1.76, 0.42, g, 16);
-      box(0.06, 0.06, 0.3, roseGold, gx, 1.76, 0.6, g);
+    box(1.6, 0.85, 0.8, marble, 0, 1.78, 0, g, 0.08);
+    box(1.66, 0.1, 0.85, roseGold, 0, 1.36, 0, g, 0.03);
+    box(1.66, 0.1, 0.85, roseGold, 0, 2.24, 0, g, 0.04);
+    dome(0.5, copper, 0, 2.28, -0.05, g).scale.set(1.3, 0.9, 0.8);
+    cyl(0.04, 0.04, 0.16, roseGold, 0, 2.72, -0.05, g, 8);
+    add(new THREE.SphereGeometry(0.07, 12, 10), amberGlow, 0, 2.84, -0.05, g);
+    for (const x of [-0.85, 0.85]) {
+      cyl(0.09, 0.09, 0.85, champagne, x, 1.78, 0, g, 16);
+      cyl(0.1, 0.1, 0.08, roseGold, x, 2.24, 0, g, 16);
     }
-    box(1.1, 0.05, 0.45, roseGold, 0, 1.4, 0.12, g);
-    for (const x of [-0.5, 0, 0.5]) cyl(0.09, 0.07, 0.12, marble, x, 2.36, 0, g, 12);
-    add(new THREE.SphereGeometry(0.05, 10, 10), amberGlow, 0, 2.3, 0.3, g);
+    dial(g, -0.45, 2.02, 0.41); dial(g, 0.45, 2.02, 0.41);
+    for (const gx of [-0.3, 0.3]) {
+      cyl(0.12, 0.12, 0.14, roseGold, gx, 1.74, 0.44, g, 16);
+      box(0.06, 0.06, 0.3, roseGold, gx, 1.74, 0.62, g);
+    }
+    box(1.2, 0.05, 0.5, roseGold, 0, 1.4, 0.14, g);
+    box(0.5, 0.06, 0.04, amberGlow, 0, 2.06, 0.42, g);
+    for (const x of [-0.5, 0, 0.5]) cyl(0.09, 0.07, 0.12, marble, x, 2.42, 0.2, g, 12);
   },
   milk(st, g) {
-    cyl(0.28, 0.28, 0.8, marble, 0, 1.8, 0, g, 24);
-    cyl(0.3, 0.3, 0.06, roseGold, 0, 1.5, 0, g, 24);
-    cyl(0.3, 0.3, 0.06, roseGold, 0, 2.18, 0, g, 24);
-    add(new THREE.SphereGeometry(0.28, 20, 14, 0, Math.PI * 2, 0, Math.PI / 2), champagne, 0, 2.2, 0, g);
-    cyl(0.03, 0.03, 0.6, roseGold, 0.3, 1.8, 0.2, g, 8);
-    box(0.2, 0.04, 0.04, roseGold, 0.4, 1.5, 0.2, g);
-    dial(g, 0, 1.95, 0.29);
-    add(new THREE.SphereGeometry(0.04, 10, 10), amberGlow, 0, 2.3, 0.2, g);
+    cyl(0.3, 0.3, 0.9, marble, 0, 1.8, 0, g, 28);
+    cyl(0.32, 0.32, 0.07, roseGold, 0, 1.38, 0, g, 28);
+    cyl(0.32, 0.32, 0.07, roseGold, 0, 2.25, 0, g, 28);
+    box(0.1, 0.55, 0.04, amberGlow, 0, 1.85, 0.3, g);
+    dome(0.3, copper, 0, 2.28, 0, g);
+    cyl(0.025, 0.025, 0.2, roseGold, 0, 2.62, 0, g, 8);
+    add(new THREE.SphereGeometry(0.06, 12, 10), amberGlow, 0, 2.74, 0, g);
+    cyl(0.03, 0.03, 0.7, roseGold, 0.34, 1.85, 0.1, g, 8);
+    box(0.25, 0.04, 0.04, roseGold, 0.44, 1.5, 0.1, g);
+    dial(g, 0, 2.05, 0.31);
   },
   dough(st, g) {
-    box(1.1, 0.12, 0.8, marble, 0, 1.45, 0, g, 0.03);
-    box(1.14, 0.06, 0.84, roseGold, 0, 1.38, 0, g, 0.02);
-    cyl(0.32, 0.22, 0.3, champagne, -0.25, 1.66, 0, g, 24);
+    box(1.2, 0.12, 0.85, marble, 0, 1.45, 0, g, 0.03);
+    box(1.24, 0.06, 0.9, roseGold, 0, 1.38, 0, g, 0.02);
+    cyl(0.34, 0.24, 0.3, champagne, -0.25, 1.66, 0, g, 24);
     for (let i = 0; i < 3; i++) add(new THREE.SphereGeometry(0.17, 12, 10), M(0xefd9a8, { roughness: 1 }), -0.25 + (i - 1) * 0.15, 1.9 + (i % 2) * 0.1, 0, g).scale.y = 0.75;
-    cyl(0.07, 0.07, 0.7, roseGold, 0.3, 1.58, 0.15, g, 10).rotation.z = Math.PI / 2;
-    for (const x of [-0.35, 0, 0.35]) add(new THREE.SphereGeometry(0.02, 8, 8), amberGlow, x, 1.52, 0.35, g);
+    dome(0.42, warmGlass, -0.25, 1.8, 0, g);
+    add(new THREE.SphereGeometry(0.04, 10, 10), roseGold, -0.25, 2.24, 0, g);
+    cyl(0.07, 0.07, 0.7, roseGold, 0.35, 1.58, 0.2, g, 10).rotation.z = Math.PI / 2;
+    for (const x of [-0.45, 0, 0.45]) add(new THREE.SphereGeometry(0.02, 8, 8), amberGlow, x, 1.52, 0.4, g);
   },
   oven(st, g) {
-    box(1.5, 1.05, 0.9, marbleDark, 0, 1.82, 0, g, 0.07);
-    box(1.56, 0.08, 0.95, roseGold, 0, 2.36, 0, g, 0.03);
-    box(1.56, 0.08, 0.95, roseGold, 0, 1.3, 0, g, 0.03);
-    box(1.1, 0.6, 0.05, amberGlow, 0, 1.8, 0.46, g, 0.02);
-    cyl(0.03, 0.03, 1.0, roseGold, 0, 2.0, 0.55, g, 8).rotation.z = Math.PI / 2;
-    for (const x of [-0.5, 0, 0.5]) { const k = cyl(0.07, 0.07, 0.06, roseGold, x, 2.2, 0.46, g, 14); k.rotation.x = Math.PI / 2; }
-    for (const x of [-0.65, 0.65]) add(new THREE.SphereGeometry(0.025, 8, 8), champagne, x, 2.1, 0.46, g);
+    box(1.6, 1.1, 0.95, marbleDark, 0, 1.85, 0, g, 0.07);
+    box(1.66, 0.08, 1.0, roseGold, 0, 2.42, 0, g, 0.03);
+    box(1.66, 0.08, 1.0, roseGold, 0, 1.3, 0, g, 0.03);
+    box(1.0, 0.5, 0.05, amberGlow, 0, 1.76, 0.49, g, 0.02);
+    const arch = cyl(0.5, 0.5, 0.05, amberGlow, 0, 2.0, 0.49, g, 24);
+    arch.rotation.x = Math.PI / 2; arch.scale.set(1, 1, 0.5);
+    add(new THREE.TorusGeometry(0.52, 0.04, 8, 24, Math.PI), roseGold, 0, 2.0, 0.5, g);
+    box(1.04, 0.06, 0.06, roseGold, 0, 1.5, 0.52, g);
+    cyl(0.07, 0.07, 0.45, roseGold, 0.62, 2.7, -0.2, g, 12);
+    for (const x of [-0.65, 0.65]) { const k = cyl(0.07, 0.07, 0.06, roseGold, x, 1.5, 0.5, g, 14); k.rotation.x = Math.PI / 2; }
   },
 };
 const fancyStations = { cups: cupSt, espresso: machineSt, milk: milkSt, dough: doughSt, oven: ovenSt };
