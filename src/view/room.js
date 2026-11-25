@@ -227,7 +227,7 @@ scene.add(extras);
 }
 
 function addDiner(chair, tableParent) {
-  const p = makePerson(pick(shirtC), pick(skinC), pick(hairC));
+  const p = makePerson(pick(shirtC), pick(skinC), pick(hairC), false, Math.random() < 0.5);
   p.position.y = -0.12;
   p.scale.setScalar(0.92);
   const [lL, lR] = p.userData.legs;

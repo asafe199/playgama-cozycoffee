@@ -220,7 +220,7 @@ function spawnCustomer() {
   const slot = SLOTS.findIndex((_, i) => !G.customers.some((c) => c.slot === i));
   if (slot < 0) return;
   const type = pick(ORDER_POOLS[level - 1]);
-  const mesh = makePerson(pick(shirtC), pick(skinC), pick(hairC));
+  const mesh = makePerson(pick(shirtC), pick(skinC), pick(hairC), false, Math.random() < 0.5);
   mesh.position.set(doorX(), 0, 4);
   const bubble = makeBubble(RECIPES[type].icon);
   bubble.position.y = 3.0;

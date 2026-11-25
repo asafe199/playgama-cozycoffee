@@ -1,8 +1,11 @@
 import * as THREE from 'three';
-import { add, box, cyl, M } from './scene.js';
+import { add, box, cyl, noShadow, M } from './scene.js';
+import { pick } from '../model/state.js';
 import { white } from './materials.js';
 
-export function makePerson(shirtC, skinC, hairC, chef = false) {
+const skirtC = [0xb03a5b, 0x4a6fa5, 0x6b4c9a, 0x2f7d6d, 0xd9a441, 0x8a2f2f];
+
+export function makePerson(shirtC, skinC, hairC, chef = false, female = false) {
   const g = new THREE.Group();
   const limb = (w, h, d, mat, x, y, r) => {
     const pivot = new THREE.Group();
@@ -12,9 +15,16 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
     return pivot;
   };
   const pants = M(0x39424e), shirt = M(shirtC, { roughness: 0.9 });
-  const legL = limb(0.26, 0.75, 0.3, pants, -0.13, 0.75, 0.06);
-  const legR = limb(0.26, 0.75, 0.3, pants, 0.13, 0.75, 0.06);
-  box(0.7, 0.8, 0.42, shirt, 0, 1.1, 0, g, 0.12);
+  const girl = female && !chef;
+  const legMat = girl ? M(skinC, { roughness: 0.6 }) : pants;
+  const legL = limb(girl ? 0.2 : 0.26, 0.75, girl ? 0.24 : 0.3, legMat, -0.13, 0.75, 0.06);
+  const legR = limb(girl ? 0.2 : 0.26, 0.75, girl ? 0.24 : 0.3, legMat, 0.13, 0.75, 0.06);
+  box(girl ? 0.6 : 0.7, 0.8, girl ? 0.36 : 0.42, shirt, 0, 1.1, 0, g, 0.12);
+  if (girl) {
+    // skirt flares from the waist so the figure reads as feminine
+    const skirt = M(pick(skirtC), { roughness: 0.85 });
+    cyl(0.3, 0.46, 0.42, skirt, 0, 0.78, 0, g, 20);
+  }
   // arms have an elbow: upper arm + forearm pivot (userData.fore)
   const arm = (x) => {
     const pivot = new THREE.Group();
@@ -88,7 +98,23 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
     g.userData.fancy = fancy;
     g.userData.shirt = shirt;
     g.userData.shirtBase = shirtC;  } else {
-    add(new THREE.SphereGeometry(0.3, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), M(hairC, { roughness: 0.8 }), 0, 0.32, -0.01, head).rotation.x = -0.15;
+    const hairM = M(hairC, { roughness: 0.8 });
+    add(new THREE.SphereGeometry(0.3, 20, 14, 0, Math.PI * 2, 0, Math.PI * (female ? 0.6 : 0.55)), hairM, 0, 0.32, -0.01, head).rotation.x = -0.15;
+    if (female) {
+      if (Math.random() < 0.5) {
+        // long hair down the back and over the shoulders
+        box(0.58, 0.66, 0.16, hairM, 0, 0.0, -0.2, head, 0.07);
+        box(0.08, 0.5, 0.14, hairM, -0.28, -0.05, -0.02, head, 0.04);
+        box(0.08, 0.5, 0.14, hairM, 0.28, -0.05, -0.02, head, 0.04);
+      } else {
+        // ponytail with a bow
+        add(new THREE.SphereGeometry(0.1, 10, 10), hairM, 0, 0.3, -0.3, head);
+        cyl(0.07, 0.03, 0.5, hairM, 0, 0.04, -0.34, head, 10).rotation.x = -0.2;
+        add(new THREE.SphereGeometry(0.06, 8, 8), M(0xff7aa8), 0, 0.3, -0.36, head);
+      }
+      // lips and lashes
+      noShadow(add(new THREE.SphereGeometry(0.03, 8, 6), M(0xd23a5a), 0, 0.17, 0.27, head)).scale.set(1.6, 0.7, 0.5);
+    }
   }
   g.userData.legs = [legL, legR];
   g.userData.arms = [armL, armR];
