@@ -214,7 +214,7 @@ function nearest() {
   let best = null, bd = 2.5;
   for (const s of Object.values(stations)) {
     if (s.key === 'serve' || s.hidden) continue;
-    const d = distTo(s);
+    const d = distTo(s) * (s.key === 'waffle' ? 0.6 : 1);
     if (d < bd) { bd = d; best = s; }
   }
   if (best && P.pos.z < -2.95) return best;
