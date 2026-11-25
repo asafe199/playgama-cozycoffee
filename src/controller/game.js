@@ -9,7 +9,7 @@ import { makeItem } from '../view/items.js';
 import { makePerson, animatePerson, dressChef } from '../view/people.js';
 import { applyRoomTheme } from '../view/room.js';
 import {
-  stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, ovenGlass, applyStationLevel,
+  stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, waffleSt, ovenGlass, applyStationLevel,
 } from '../view/stations.js';
 import { hud, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
@@ -102,8 +102,8 @@ function setHeld(type) {
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
     const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso' };
+      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel' }
+      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', waffle: 'Waffle', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso' };
     const tag = makeTag(names[type]);
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
@@ -133,7 +133,7 @@ function resetGame() {
   setHeld(null);
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
-  for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt]) {
+  for (const s of [machineSt, ovenSt, milkSt, chocoSt, honeySt, waffleSt]) {
     s.data = {};
     if (s.cupSlot.children[0]) s.cupSlot.remove(s.cupSlot.children[0]);
     s.bar.visible = false;
@@ -303,16 +303,30 @@ function interact(s) {
       } else if (!d.state) say('Chocolate precisa de espresso, latte ou croissant na mão.');
       break;
     }
+    case 'waffle': {
+      const d = s.data;
+      if (!d.state && !h) {
+        d.state = 'baking'; d.t = 0;
+        s.cupSlot.add(makeItem('dough'));
+        say('Fazendo o waffle…');
+      } else if (d.state === 'done' && !h) {
+        s.cupSlot.remove(s.cupSlot.children[0]);
+        d.state = null; s.bar.visible = false;
+        setHeld('waffle');
+        say('Waffle na mão → leve ao MEL.');
+      } else if (!d.state) say('Mãos livres: a máquina faz a massa de waffle sozinha.');
+      break;
+    }
     case 'honey': {
       const d = s.data;
-      if (!d.state && ['latte', 'croissant', ...(level >= 4 ? ['espresso'] : [])].includes(h)) {
+      if (!d.state && ['latte', 'waffle', ...(level >= 4 ? ['espresso'] : [])].includes(h)) {
         d.item = h;
         setHeld(null);
         d.state = 'dipping'; d.t = 0;
         s.cupSlot.add(makeItem(h));
         say('Adicionando mel…');
       } else if (!d.state && ['honeylatte', 'wafflehoney', 'honeyespresso'].includes(h)) {
-        d.item = { honeylatte: 'latte', wafflehoney: 'croissant', honeyespresso: 'espresso' }[h];
+        d.item = { honeylatte: 'latte', wafflehoney: 'waffle', honeyespresso: 'espresso' }[h];
         s.cupSlot.add(makeItem(h));
         d.state = 'done'; d.t = 0;
         setHeld(null);
@@ -320,9 +334,9 @@ function interact(s) {
       } else if (d.state === 'done' && !h) {
         s.cupSlot.remove(s.cupSlot.children[0]);
         d.state = null; s.bar.visible = false;
-        setHeld({ latte: 'honeylatte', croissant: 'wafflehoney', espresso: 'honeyespresso' }[d.item]);
+        setHeld({ latte: 'honeylatte', waffle: 'wafflehoney', espresso: 'honeyespresso' }[d.item]);
         say('Pronto! Entregue no prato do cliente.');
-      } else if (!d.state) say('Mel precisa de latte, croissant (ou espresso no nível 4) na mão.');
+      } else if (!d.state) say('Mel precisa de latte, waffle (ou espresso no nível 4) na mão.');
       break;
     }
     case 'serve': {
@@ -383,8 +397,8 @@ function updateStation(s, dt, doneAt) {
     if (d.t >= doneAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
-      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', croissant: 'wafflehoney', espresso: 'honeyespresso' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
-      say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
+      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', waffle: 'wafflehoney', espresso: 'honeyespresso' }[d.item] : s.key === 'waffle' ? 'waffle' : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
+      say(s.key === 'waffle' ? 'Waffle pronto! Pegue na máquina.' : s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
     }
   } else if (d.state === 'done') {
     s.bar.scale.x = 1.2;
@@ -440,6 +454,7 @@ function tick() {
     updateStation(ovenSt, dt, 5);
     updateStation(chocoSt, dt, 2.5);
     updateStation(honeySt, dt, 2.5);
+    updateStation(waffleSt, dt, 4);
     updateHelper(dt, t);
     ovenGlass.material.emissive.setHex(ovenSt.data.state === 'baking' ? 0xff6a00 : 0x000000);
     ovenGlass.material.emissiveIntensity = 0.6;

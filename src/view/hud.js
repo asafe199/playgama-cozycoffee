@@ -75,8 +75,8 @@ document.body.appendChild(guide);
 export function refreshGuide() {
   const l2 = level >= 2, l3 = level >= 3, l4 = level >= 4;
   guide.innerHTML = lang === 'pt'
-    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Mel<br>Waffle com Mel: Croissant → Mel' : '') + (l4 ? '<br>Espresso com Mel: Espresso → Mel' : '')
-    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Honey<br>Waffle with Honey: Croissant → Honey' : '') + (l4 ? '<br>Honey Espresso: Espresso → Honey' : '');
+    ? '<b>Receitas</b><br>Espresso: Copo → Máquina → entregue<br>Latte: Copo → Leite → entregue<br>Croissant: Massa → Forno → entregue' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Mel<br>Waffle: Máquina de Waffle (mãos livres)<br>Waffle com Mel: Waffle → Mel' : '') + (l4 ? '<br>Espresso com Mel: Espresso → Mel' : '')
+    : '<b>Recipes</b><br>Espresso: Cup → Machine → serve<br>Latte: Cup → Milk → serve<br>Croissant: Dough → Oven → serve' + (l2 ? '<br>Mocha: Espresso → Chocolate<br>Mocha Latte: Latte → Chocolate<br>Choco Croissant: Croissant → Chocolate' : '') + (l3 ? '<br>Honey Latte: Latte → Honey<br>Waffle: Waffle Maker (empty hands)<br>Waffle with Honey: Waffle → Honey' : '') + (l4 ? '<br>Honey Espresso: Espresso → Honey' : '');
 }
 
 hud.act.textContent = tr('AÇÃO');

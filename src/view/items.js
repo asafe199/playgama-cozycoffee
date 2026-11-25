@@ -17,12 +17,12 @@ export function makeItem(type) {
     }
   } else if (type === 'dough') {
     add(new THREE.SphereGeometry(0.18, 12, 10), M(0xefd9a8, { roughness: 1 }), 0, 0.14, 0, g).scale.y = 0.75;
-  } else if (type === 'wafflehoney') {
+  } else if (type === 'wafflehoney' || type === 'waffle') {
     const waffle = M(0xd9a35c, { roughness: 0.8 });
     const ridge = M(0xc98a4a, { roughness: 0.8 });
     add(new THREE.BoxGeometry(0.3, 0.06, 0.3), waffle, 0, 0.1, 0, g);
     for (const i of [-1, 0, 1]) for (const j of [-1, 0, 1]) add(new THREE.BoxGeometry(0.07, 0.03, 0.07), ridge, i * 0.09, 0.14, j * 0.09, g);
-    add(new THREE.SphereGeometry(0.05, 10, 8), M(0xd98c1f, { roughness: 0.3, emissive: 0x5a3a0a }), 0, 0.15, 0, g).scale.set(1.4, 0.4, 1.4);
+    if (type === 'wafflehoney') add(new THREE.SphereGeometry(0.05, 10, 8), M(0xd98c1f, { roughness: 0.3, emissive: 0x5a3a0a }), 0, 0.15, 0, g).scale.set(1.4, 0.4, 1.4);
   } else {
     const c = add(new THREE.TorusGeometry(0.12, 0.07, 10, 18, Math.PI * 1.5), M(type === 'chococroissant' ? 0x6b3a1c : 0xdc9a4a, { roughness: 0.85 }), 0, 0.15, 0, g);
     c.rotation.x = Math.PI / 2;

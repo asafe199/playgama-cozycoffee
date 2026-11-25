@@ -136,6 +136,20 @@ honeySt.hidden = true;
 buildDipStation(honeySt.g, 0xd98c1f, 0x7a4a0a);
 honeySt.g.visible = false;
 
+// waffle maker with its own batter (level 3+)
+export const waffleSt = makeStation('waffle', -5.4, -3.4, 0.6, 'Waffle');
+box(1.0, 0.8, 0.8, woodDark, 0, 0.4, 0, waffleSt.g, 0.04);
+box(1.1, 0.08, 0.9, M(0xd9c7ae, { roughness: 0.4 }), 0, 0.84, 0, waffleSt.g, 0.03);
+box(0.7, 0.14, 0.6, black, 0, 0.98, 0, waffleSt.g, 0.04);
+box(0.7, 0.1, 0.6, M(0x3a3d44, { roughness: 0.3, metalness: 0.6 }), 0, 1.12, -0.05, waffleSt.g, 0.04).rotation.x = -0.25;
+cyl(0.14, 0.12, 0.3, M(0xefd9a8, { roughness: 0.8 }), 0.38, 1.04, 0.28, waffleSt.g, 16);
+waffleSt.cupSlot = new THREE.Group();
+waffleSt.cupSlot.position.set(0, 1.12, 0.38);
+waffleSt.g.add(waffleSt.cupSlot);
+waffleSt.bar.position.y = 1.9;
+waffleSt.hidden = true;
+waffleSt.g.visible = false;
+
 function dial(parent, x, y, z) {
   const r = cyl(0.17, 0.17, 0.05, gold, x, y, z, parent, 24); r.rotation.x = Math.PI / 2;
   const f = cyl(0.13, 0.13, 0.06, white, x, y, z + 0.005, parent, 24); f.rotation.x = Math.PI / 2;
@@ -276,6 +290,9 @@ scene.add(chocoTag);
 const honeyTag = makeTag(lang === 'pt' ? 'Mel' : 'Honey');
 honeyTag.position.set(honeySt.pos.x, TAG_Y, honeySt.pos.z);
 scene.add(honeyTag);
+const waffleTag = makeTag(lang === 'pt' ? 'Waffle' : 'Waffle');
+waffleTag.position.set(waffleSt.pos.x, 2.2, waffleSt.pos.z);
+scene.add(waffleTag);
 
 export function applyStationLevel(n) {
   const lv = LEVELS[n - 1];
@@ -287,6 +304,9 @@ export function applyStationLevel(n) {
   honeySt.g.visible = n >= 3;
   honeySt.hidden = n < 3;
   honeyTag.visible = n >= 3;
+  waffleSt.g.visible = n >= 3;
+  waffleSt.hidden = n < 3;
+  waffleTag.visible = n >= 3;
 
   const scale = n === 3 ? SERVE_SCALE : n >= 4 ? 1.7 : 1;
   counterBase.scale.x = scale;
