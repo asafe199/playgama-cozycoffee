@@ -4,7 +4,7 @@ import { hud } from '../view/hud.js';
 import { stations } from '../view/stations.js';
 import { LEVELS } from '../model/levels.js';
 import { lang } from '../model/i18n.js';
-import { G, P, SLOTS } from '../model/state.js';
+import { G, P, BOUNDS, SLOTS } from '../model/state.js';
 
 export const keys = new Set();
 
@@ -42,15 +42,15 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
       if (o) {
         const s = stations[o.userData.station];
         P.pending = s;
-        P.goal = new THREE.Vector3(s.key === 'serve' ? SLOTS.reduce((m, x) => (Math.abs(x - h.point.x) < Math.abs(m - h.point.x) ? x : m), SLOTS[1]) : s.pos.x, 0, s.key === 'serve' ? -2.4 : -3.9);
+        P.goal = new THREE.Vector3(s.key === 'serve' ? SLOTS.reduce((m, x) => (Math.abs(x - h.point.x) < Math.abs(m - h.point.x) ? x : m), SLOTS[1]) : THREE.MathUtils.clamp(s.pos.x, BOUNDS.minX, BOUNDS.maxX), 0, s.key === 'serve' ? -2.4 : s.key === 'waffle' ? -3.0 : -3.9);
         return;
       }
     }
     const p = new THREE.Vector3();
     if (ray.ray.intersectPlane(floorPlane, p)) {
       // keep the target inside the walkable area behind the counter
-      p.x = THREE.MathUtils.clamp(p.x, -5.2, 5.2);
-      p.z = THREE.MathUtils.clamp(p.z, -4.5, -2.3);
+      p.x = THREE.MathUtils.clamp(p.x, BOUNDS.minX, BOUNDS.maxX);
+      p.z = THREE.MathUtils.clamp(p.z, BOUNDS.minZ, BOUNDS.maxZ);
       P.goal = p; P.pending = null;
     }
   });

@@ -3,7 +3,7 @@ import bridge from '@playgama/bridge';
 import { lang, tr } from '../model/i18n.js';
 import { RECIPES, ORDER_POOLS } from '../model/recipes.js';
 import { LEVELS, SLOT_SETS } from '../model/levels.js';
-import { G, P, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick } from '../model/state.js';
+import { G, P, BOUNDS, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick } from '../model/state.js';
 import { scene, renderer, camera, setZoom } from '../view/scene.js';
 import { makeItem } from '../view/items.js';
 import { makePerson, animatePerson, dressChef } from '../view/people.js';
@@ -381,8 +381,8 @@ setupInput({ interact, dropHeld, nearest, resetGame });
 const clock = new THREE.Clock();
 const dirV = new THREE.Vector3();
 function clampPlayer() {
-  P.pos.x = THREE.MathUtils.clamp(P.pos.x, -5.2, 5.2);
-  P.pos.z = THREE.MathUtils.clamp(P.pos.z, -4.5, -2.3);
+  P.pos.x = THREE.MathUtils.clamp(P.pos.x, BOUNDS.minX, BOUNDS.maxX);
+  P.pos.z = THREE.MathUtils.clamp(P.pos.z, BOUNDS.minZ, BOUNDS.maxZ);
 }
 
 function updateStation(s, dt, doneAt) {
