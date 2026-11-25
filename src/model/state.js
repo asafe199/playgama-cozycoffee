@@ -13,7 +13,7 @@ export function setLevel(n) {
   SLOTS = SLOT_SETS[LEVELS[n - 1].slots];
 }
 
-export const G = { level: 1, mode: 'ready', score: 0, time: DAY, hearts: 3, customers: [], nextSpawn: 1, served: 0, paused: false, best: 0, maxLevel: 1 };
+export const G = { level: 1, mode: 'ready', score: 0, time: DAY, hearts: 3, customers: [], nextSpawn: 1, served: 0, paused: false, total: 0, totalServed: 0, best: 0, maxLevel: 1 };
 export const P = { pos: new Vector3(0, 0, -3.8), goal: null, pending: null, held: null, heldMesh: null };
 
 export const skinC = [0xf1c27d, 0xc68642, 0xe0ac69, 0xffdbac];

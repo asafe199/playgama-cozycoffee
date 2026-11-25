@@ -149,6 +149,7 @@ function resetGame() {
   applyLevel(G.level);
   resetHelper();
   hud.lvl.value = String(G.level);
+  if (G.level === 1) G.total = G.totalServed = 0;
   Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
   P.pos.set(0, 0, -3.8);
@@ -194,6 +195,22 @@ function endGame(win, reason) {
     bridge.storage.set(['max_level'], [String(G.maxLevel)]).catch(() => {});
     hud.next.textContent = lang === 'pt' ? `Nível ${G.level}: nova cafeteria com ${SLOT_SETS[LEVELS[G.level - 1].slots].length} clientes ao mesmo tempo!` : `Level ${G.level}: a new café with ${SLOT_SETS[LEVELS[G.level - 1].slots].length} customers at once!`;
     hud.btn.textContent = tr('Próximo nível');
+  }
+  if (win) {
+    G.total += G.score;
+    G.totalServed += G.served;
+  }
+  if (win && G.level >= LEVELS.length) {
+    G.level = 1;
+    hud.card.className = 'win';
+    hud.icon.textContent = '👑';
+    hud.title.textContent = lang === 'pt' ? 'Parabéns, você zerou o jogo!' : 'Congratulations, you beat the game!';
+    hud.text.textContent = lang === 'pt' ? 'Você conquistou o Café Imperial! Este é o seu resultado final.' : 'You conquered the Imperial Café! Here is your final result.';
+    hud.stats.innerHTML = lang === 'pt'
+      ? tile(G.total, 'Pontos totais') + tile(G.totalServed, 'Pedidos') + tile(G.best, 'Recorde', 'best')
+      : tile(G.total, 'Total score') + tile(G.totalServed, 'Orders') + tile(G.best, 'Best', 'best');
+    hud.next.textContent = lang === 'pt' ? 'Todos os 5 níveis concluídos!' : 'All 5 levels completed!';
+    hud.btn.textContent = tr('Jogar de novo');
   }
   if (bridge.advertisement.isInterstitialSupported) bridge.advertisement.showInterstitial('game_over');
 }
