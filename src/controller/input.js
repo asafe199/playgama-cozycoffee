@@ -5,6 +5,7 @@ import { setNick } from '../model/profile.js';
 import { stations } from '../view/stations.js';
 import { LEVELS } from '../model/levels.js';
 import { L } from '../model/i18n.js';
+import { toggleMute, onMuteChange } from './music.js';
 import { G, P, BOUNDS, SLOTS } from '../model/state.js';
 
 const LEVEL_WORD = L({ pt: 'Nível', en: 'Level', es: 'Nivel', fr: 'Niveau' });
@@ -25,6 +26,10 @@ export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
   hud.btn.addEventListener('click', resetGame);
   for (const b of [hud.home, hud.omenu]) b.addEventListener('click', goMenu);
   hud.home.addEventListener('pointerdown', (e) => e.stopPropagation());
+  const muteBtn = document.getElementById('mute');
+  muteBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+  muteBtn.addEventListener('click', () => toggleMute());
+  onMuteChange((m) => (muteBtn.textContent = m ? '🔇' : '🔊'));
   menu.startBtn.addEventListener('click', () => { setNick(menu.nickInput.value); menu.root.style.display = 'none'; resetGame(); });
   // the level picker is a test aid: only in `npm run dev`; hidden with `npm start` and in production builds
   if (import.meta.env.MODE !== 'development') hud.lvl.style.display = 'none';

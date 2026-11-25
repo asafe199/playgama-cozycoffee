@@ -1,4 +1,4 @@
-import { playRandomMusic, stopMusic, setMusicPaused } from './music.js';
+import { playRandomMusic, stopMusic, setHostPaused, setPlatformAudio } from './music.js';
 import * as THREE from 'three';
 import bridge from '@playgama/bridge';
 import { tr, L } from '../model/i18n.js';
@@ -624,8 +624,9 @@ function tick() {
 
 bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED, (p) => {
   G.paused = !!p;
-  setMusicPaused(p);
+  setHostPaused(p);
 });
+bridge.platform.on(bridge.EVENT_NAME.AUDIO_STATE_CHANGED, (on) => setPlatformAudio(!!on));
 
 bridge.storage
   .get(['best_score', 'max_level'])

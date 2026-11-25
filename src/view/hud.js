@@ -118,7 +118,6 @@ guide.style.cursor = 'pointer';
 for (const el of [guide, guideBtn]) el.addEventListener('pointerdown', (e) => { e.stopPropagation(); openRecipes(); });
 recipeClose.addEventListener('pointerdown', (e) => { e.stopPropagation(); closeRecipes(); });
 recipeModal.addEventListener('pointerdown', (e) => { e.stopPropagation(); if (e.target === recipeModal) closeRecipes(); });
-addEventListener('keydown', (e) => { if (e.key === 'Escape' && recipeModal.style.display === 'flex') closeRecipes(); });
 
 export function refreshGuide() {
   const l2 = level >= 2, l3 = level >= 3, l4 = level >= 4, l5 = level >= 5;

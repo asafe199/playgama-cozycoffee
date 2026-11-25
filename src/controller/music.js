@@ -1,8 +1,23 @@
+import bridge from '@playgama/bridge';
+
 const tracks = Object.values(import.meta.glob('../media/*.mp3', { eager: true, query: '?url', import: 'default' }));
 
 let audio = null;
 let last = -1;
-let paused = false;
+let wanted = false;
+let userMuted = false;
+let platformMuted = bridge.platform?.isAudioEnabled === false;
+let hostPaused = false;
+let hidden = document.hidden;
+const listeners = [];
+
+const silent = () => userMuted || platformMuted || hostPaused || hidden;
+
+function sync() {
+  if (!audio) return;
+  if (wanted && !silent()) audio.play().catch(() => {});
+  else audio.pause();
+}
 
 function next() {
   if (!tracks.length) return;
@@ -16,20 +31,40 @@ function next() {
     audio.addEventListener('ended', next);
   }
   audio.src = tracks[i];
-  if (!paused) audio.play().catch(() => {});
+  sync();
 }
 
 export function playRandomMusic() {
+  wanted = true;
   next();
 }
 
 export function stopMusic() {
+  wanted = false;
   audio?.pause();
 }
 
-export function setMusicPaused(p) {
-  paused = !!p;
-  if (!audio) return;
-  if (paused) audio.pause();
-  else audio.play().catch(() => {});
+export function setHostPaused(p) {
+  hostPaused = !!p;
+  sync();
 }
+
+export function setPlatformAudio(enabled) {
+  platformMuted = !enabled;
+  sync();
+}
+
+export function toggleMute() {
+  userMuted = !userMuted;
+  sync();
+  listeners.forEach((f) => f(userMuted));
+  return userMuted;
+}
+
+export const isMuted = () => userMuted;
+export const onMuteChange = (f) => listeners.push(f);
+
+document.addEventListener('visibilitychange', () => {
+  hidden = document.hidden;
+  sync();
+});

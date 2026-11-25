@@ -2,14 +2,19 @@ import bridge from '@playgama/bridge';
 import { ES, FR } from './locales.js';
 
 export const LANGS = [['pt', 'Português'], ['en', 'English'], ['es', 'Español'], ['fr', 'Français']];
-const saved = (() => { try { return localStorage.getItem('cafe_lang'); } catch { return null; } })();
 const platform = String(bridge.platform?.language || 'en').toLowerCase().slice(0, 2);
-export const lang = LANGS.some(([c]) => c === saved) ? saved : LANGS.some(([c]) => c === platform) ? platform : 'en';
+const supported = (c) => LANGS.some(([k]) => k === c);
+export let lang = supported(platform) ? platform : 'en';
+
+// main.js passes the choice saved in Bridge storage before any UI module loads
+export function initLang(saved) {
+  if (supported(saved)) lang = saved;
+}
 
 // the whole UI is built from `lang` at load time, so switching saves the choice and reloads
 export function setLang(l) {
-  try { localStorage.setItem('cafe_lang', l); } catch { /* storage unavailable */ }
-  location.reload();
+  const done = () => location.reload();
+  bridge.storage.set(['lang'], [l]).then(done, done);
 }
 
 // inline translations: L({ pt, en, es, fr }); missing languages fall back to English
