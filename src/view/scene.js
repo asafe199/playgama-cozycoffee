@@ -44,10 +44,10 @@ export const box = (w, h, d, mat, x, y, z, p, r = 0.03) => add(new RoundedBoxGeo
 export const cyl = (rt, rb, h, mat, x, y, z, p, seg = 24) => add(new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z, p);
 export const noShadow = (m) => ((m.castShadow = false), m);
 
-export function setZoom(f, lookZ) {
+export function setZoom(f, lookZ, lookX = 0) {
   frustum = f;
-  camera.position.set(11, 14, 11 + (lookZ + 1.4));
-  camera.lookAt(0, 0.5, lookZ);
+  camera.position.set(11 + lookX, 14, 11 + (lookZ + 1.4));
+  camera.lookAt(lookX, 0.5, lookZ);
   camera.top = f;
   camera.bottom = -f;
   camera.left = -f * aspect();

@@ -95,7 +95,9 @@ function entranceDoor(x, z) {
   g.position.set(x, 0, z);
   g.rotation.y = Math.PI / 2;
   scene.add(g);
+  doorGroup = g;
 }
+let doorGroup;
 function buildDoorDecor(postH, half) {
   const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.95 });
   const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
@@ -196,6 +198,16 @@ function cafeTable(x, z, parent = scene) {
 export const bigRoom = new THREE.Group();
 bigRoom.visible = false;
 scene.add(bigRoom);
+// level 4 widens the hall to the right: floor, back wall and kitchen counter
+for (let i = 0; i < 32; i++) {
+  const m = M(0xd8d3c8, { roughness: 0.3 });
+  floorMats.push(m);
+  box(3.6, 0.16, 0.5, m, 7.8, -0.08, -5.75 + i * 0.5, bigRoom, 0.01);
+}
+box(3.6, 1.4, 0.3, brick, 7.8, 0.7, -6.15, bigRoom);
+box(3.6, WH - 1.4, 0.3, wallMat, 7.8, 1.4 + (WH - 1.4) / 2, -6.15, bigRoom);
+box(3.6, 1.2, 1.2, woodDark, 7.2, 0.6, -5.3, bigRoom);
+box(3.6, 0.12, 1.4, top, 7.2, 1.26, -5.3, bigRoom);
 for (let i = 0; i < 8; i++) {
   const m = M(0xd8d3c8, { roughness: 0.3 });
   floorMats.push(m);
@@ -297,6 +309,7 @@ export function applyRoomTheme(n) {
   extras3.visible = n === 3;
   extras4.visible = n === 4;
   bigRoom.visible = n === 4;
+  doorGroup.position.x = n >= 4 ? 9.35 : 5.85;
   greenPlants.forEach((p) => (p.visible = n === 1));
   leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22, 0x2a1850][n - 1]);
   doorDecor.forEach((d, i) => (d.visible = i === n - 1));

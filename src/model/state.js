@@ -9,7 +9,7 @@ export const BOUNDS = { minX: -5.2, maxX: 5.2, minZ: -4.5, maxZ: -2.3 };
 export function setLevel(n) {
   level = n;
   BOUNDS.minX = n >= 3 ? -5.7 : -5.2;
-  BOUNDS.maxX = n >= 3 ? 5.7 : 5.2;
+  BOUNDS.maxX = n >= 4 ? 8.7 : n >= 3 ? 5.7 : 5.2;
   SLOTS = SLOT_SETS[LEVELS[n - 1].slots];
 }
 

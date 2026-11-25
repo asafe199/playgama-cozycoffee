@@ -20,7 +20,12 @@ scene.add(player);
 
 // ---------- level 4 helper (auto-cooks orders) ----------
 const HELPER_AT = 100;
-const helper = { mesh: makePerson(0xc2185b, 0xe0ac69, 0x2b1d14, true), active: false, state: 'idle', target: null, t: 0, item: null, pos: new THREE.Vector3() };
+const HELPER_ROUTES = {
+  espresso: ['cups', 'espresso'], latte: ['cups', 'milk'], croissant: ['dough', 'oven'],
+  mocha: ['cups', 'espresso', 'choco'], mochalatte: ['cups', 'milk', 'choco'], chococroissant: ['dough', 'oven', 'choco'],
+  honeylatte: ['cups', 'milk', 'honey'], wafflehoney: ['waffle', 'honey'], honeyespresso: ['cups', 'espresso', 'honey'],
+};
+const helper = { route: [], step: 0, mesh: makePerson(0xc2185b, 0xe0ac69, 0x2b1d14, true), active: false, state: 'idle', target: null, t: 0, item: null, pos: new THREE.Vector3() };
 helper.mesh.visible = false;
 scene.add(helper.mesh);
 const helperBtn = document.createElement('button');
@@ -64,16 +69,28 @@ function updateHelper(dt, t) {
   const h = helper;
   if (h.state === 'idle') {
     const c = G.customers.find((x) => x.state === 'waiting' && !x.helped);
-    if (helperWalk(0, -4.0, dt, t) && c) { c.helped = true; h.target = c; h.state = 'cooking'; h.t = 0; }
+    if (helperWalk(0, -4.0, dt, t) && c) { c.helped = true; h.target = c; h.state = 'cooking'; h.t = 0; h.step = 0; h.route = HELPER_ROUTES[c.type]; }
   } else if (h.state === 'cooking') {
-    helperWalk(SLOTS[h.target.slot] * 0.3, -4.2, dt, t);
-    h.t += dt;
-    if (h.target.state !== 'waiting') { h.state = 'idle'; return; }
-    if (h.t >= 4.5) {
-      h.item = makeItem(h.target.type);
-      h.item.position.set(0, 1.05, 0.62);
-      h.mesh.add(h.item);
-      h.state = 'delivering';
+    const c = h.target;
+    if (c.state !== 'waiting') { if (h.item) h.mesh.remove(h.item); h.item = null; h.state = 'idle'; return; }
+    const st = stations[h.route[h.step]];
+    const arrived = helperWalk(THREE.MathUtils.clamp(st.pos.x, BOUNDS.minX, BOUNDS.maxX), st.key === 'waffle' ? -3.0 : -4.0, dt, t);
+    if (arrived) {
+      h.mesh.rotation.y = Math.atan2(0, st.key === 'waffle' ? -1 : -1);
+      h.t += dt;
+      // working pose: arms moving over the station
+      const [aL, aR] = h.mesh.userData.arms;
+      aL.rotation.x = -1.1 + Math.sin(t * 14) * 0.3;
+      aR.rotation.x = -1.1 - Math.sin(t * 14) * 0.3;
+      if (h.t >= 1.2) {
+        h.t = 0;
+        const last = h.step === h.route.length - 1;
+        if (h.item) h.mesh.remove(h.item);
+        h.item = makeItem(last ? c.type : h.route[0] === 'dough' ? 'dough' : h.route[0] === 'waffle' ? 'waffle' : 'cup');
+        h.item.position.set(0, 1.05, 0.62);
+        h.mesh.add(h.item);
+        if (last) h.state = 'delivering'; else h.step++;
+      }
     }
   } else if (h.state === 'delivering') {
     const c = h.target;
@@ -118,7 +135,7 @@ function applyLevel(n) {
   applyRoomTheme(n);
   applyStationLevel(n);
   dressChef(player, n >= 4);
-  setZoom(n >= 4 ? 9.6 : 8.2, n >= 4 ? 0 : -1.4);
+  setZoom(n >= 4 ? 10.6 : 8.2, n >= 4 ? 0.3 : -1.4, n >= 4 ? 1.7 : 0);
   refreshGuide();
 }
 
@@ -175,7 +192,7 @@ function spawnCustomer() {
   if (slot < 0) return;
   const type = pick(ORDER_POOLS[level - 1]);
   const mesh = makePerson(pick(shirtC), pick(skinC), pick(hairC));
-  mesh.position.set(6, 0, 4);
+  mesh.position.set(level >= 4 ? 9.4 : 6, 0, 4);
   const bubble = makeBubble(RECIPES[type].icon);
   bubble.position.y = 3.0;
   bubble.visible = false;
@@ -473,7 +490,7 @@ function tick() {
   // customers
   for (let i = G.customers.length - 1; i >= 0; i--) {
     const c = G.customers[i];
-    const dest = c.state === 'leaving' ? new THREE.Vector3(6, 0, 4) : new THREE.Vector3(SLOTS[c.slot], 0, -0.4);
+    const dest = c.state === 'leaving' ? new THREE.Vector3(level >= 4 ? 9.4 : 6, 0, 4) : new THREE.Vector3(SLOTS[c.slot], 0, -0.4);
     const d = dest.clone().sub(c.mesh.position);
     d.y = 0;
     if (d.length() > 0.08) {

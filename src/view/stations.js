@@ -294,7 +294,29 @@ const waffleTag = makeTag(lang === 'pt' ? 'Waffle' : 'Waffle');
 waffleTag.position.set(waffleSt.pos.x, 2.2, waffleSt.pos.z);
 scene.add(waffleTag);
 
+// level 4 spreads the kitchen over the wider counter
+const L4_X = { cups: -5.3, espresso: -3.4, milk: -1.5, dough: 0.4, oven: 2.4, choco: 4.5, honey: 6.4, waffle: 8.3 };
+const baseX = {};
+for (const k of Object.keys(L4_X)) baseX[k] = stations[k].pos.x;
+const tagsByKey = {};
+scene.children.filter((o) => o.isSprite).forEach((o) => {
+  for (const k of Object.keys(L4_X)) if (Math.abs(o.position.x - baseX[k]) < 0.01 && Math.abs(o.position.z - stations[k].pos.z) < 0.01) (tagsByKey[k] ||= []).push(o);
+});
+function placeStations(n) {
+  for (const [k, x4] of Object.entries(L4_X)) {
+    const s = stations[k];
+    const dx = (n >= 4 ? x4 : baseX[k]) - s.pos.x;
+    if (!dx) continue;
+    s.pos.x += dx;
+    s.g.position.x += dx;
+    s.ring.position.x += dx;
+    s.bar.position.x += dx;
+    (tagsByKey[k] || []).forEach((o) => (o.position.x += dx));
+  }
+}
+
 export function applyStationLevel(n) {
+  placeStations(n);
   const lv = LEVELS[n - 1];
   plateGroups.forEach((g, i) => (g.visible = i === lv.slots));
   for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n === 2; st.deluxe.visible = n >= 3; }
