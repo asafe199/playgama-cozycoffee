@@ -349,7 +349,7 @@ scene.add(extras4);
   // royal runner and gold rug border
   const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 1.5, 0.05, 1.2, extras4));
   border.rotation.x = Math.PI / 2;
-  noShadow(box(1.1, 0.02, 8.0, M(0x4b2a8a, { roughness: 0.95 }), 1.5, 0.03, 4.2, extras4, 0.005));
+  noShadow(box(1.1, 0.02, 4.6, M(0x4b2a8a, { roughness: 0.95 }), 1.5, 0.03, 5.9, extras4, 0.005));
 }
 
 // ---------- level 5 ("Café Imperial"): even bigger hall + decor ----------
@@ -489,8 +489,8 @@ scene.add(extras5);
   // crimson runner with gold borders and rug ring
   const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 2.45, 0.05, 1.2, extras5));
   border.rotation.x = Math.PI / 2;
-  noShadow(box(1.3, 0.02, 9.5, M(0x8a1030, { roughness: 0.95 }), 2.45, 0.03, 6.5, extras5, 0.005));
-  for (const sx of [-1, 1]) noShadow(box(0.05, 0.025, 9.5, goldM, 2.45 + sx * 0.67, 0.035, 6.5, extras5));
+  noShadow(box(1.3, 0.02, 7.65, M(0x8a1030, { roughness: 0.95 }), 2.45, 0.03, 7.425, extras5, 0.005));
+  for (const sx of [-1, 1]) noShadow(box(0.05, 0.025, 7.65, goldM, 2.45 + sx * 0.67, 0.035, 7.425, extras5));
 }
 
 // ---------- level 3 ("Café Dourado") decor ----------
