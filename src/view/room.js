@@ -459,7 +459,7 @@ scene.add(extras5);
         noShadow(add(new THREE.SphereGeometry(0.09, 10, 10), M(c, { roughness: 0.2, metalness: 0.5 }), x + Math.cos(a) * 0.35, WH - 1.95, z + Math.sin(a) * 0.35, extras5));
       }
     }
-    for (const [x, z] of [[-5.0, 1.2], [10.6, 3.2], [10.6, 11.0], [-1.0, 12.9]]) {
+    for (const [x, z] of [[-5.0, 1.2], [10.6, 11.0], [-1.0, 12.9]]) {
       cyl(0.1, 0.12, 0.2, M(0x6b4226), x, 0.1, z, extras5, 8);
       [[0.45, 0.6, 0.45], [0.35, 0.55, 0.9], [0.22, 0.5, 1.3]].forEach(([r, h, y]) => add(new THREE.ConeGeometry(r, h, 12), pine, x, y, z, extras5));
       add(new THREE.OctahedronGeometry(0.09), goldM, x, 1.65, z, extras5);
