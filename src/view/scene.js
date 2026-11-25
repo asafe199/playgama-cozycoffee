@@ -5,7 +5,7 @@ import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment
 export const scene = new THREE.Scene();
 scene.background = new THREE.Color(0xe9dfd2);
 const aspect = () => innerWidth / innerHeight;
-const frustum = 8.2;
+let frustum = 8.2;
 export const camera = new THREE.OrthographicCamera(-frustum * aspect(), frustum * aspect(), frustum, -frustum, 0.1, 100);
 camera.position.set(11, 14, 11);
 camera.lookAt(0, 0.5, -1.4);
@@ -44,9 +44,22 @@ export const box = (w, h, d, mat, x, y, z, p, r = 0.03) => add(new RoundedBoxGeo
 export const cyl = (rt, rb, h, mat, x, y, z, p, seg = 24) => add(new THREE.CylinderGeometry(rt, rb, h, seg), mat, x, y, z, p);
 export const noShadow = (m) => ((m.castShadow = false), m);
 
+export function setZoom(f, lookZ) {
+  frustum = f;
+  camera.position.set(11, 14, 11 + (lookZ + 1.4));
+  camera.lookAt(0, 0.5, lookZ);
+  camera.top = f;
+  camera.bottom = -f;
+  camera.left = -f * aspect();
+  camera.right = f * aspect();
+  camera.updateProjectionMatrix();
+}
+
 addEventListener('resize', () => {
   camera.left = -frustum * aspect();
   camera.right = frustum * aspect();
+  camera.top = frustum;
+  camera.bottom = -frustum;
   camera.updateProjectionMatrix();
   renderer.setSize(innerWidth, innerHeight);
 });

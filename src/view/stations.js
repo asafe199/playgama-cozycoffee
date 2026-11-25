@@ -280,7 +280,7 @@ scene.add(honeyTag);
 export function applyStationLevel(n) {
   const lv = LEVELS[n - 1];
   plateGroups.forEach((g, i) => (g.visible = i === lv.slots));
-  for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n === 2; st.deluxe.visible = n === 3; }
+  for (const st of Object.values(fancyStations)) { st.basic.visible = n === 1; st.fancy.visible = n === 2; st.deluxe.visible = n >= 3; }
   chocoSt.g.visible = n >= 2;
   chocoSt.hidden = n < 2;
   chocoTag.visible = n >= 2;
@@ -288,7 +288,7 @@ export function applyStationLevel(n) {
   honeySt.hidden = n < 3;
   honeyTag.visible = n >= 3;
 
-  const scale = n === 3 ? SERVE_SCALE : 1;
+  const scale = n === 3 ? SERVE_SCALE : n >= 4 ? 1.7 : 1;
   counterBase.scale.x = scale;
   counterTop.scale.x = scale;
   serveGlow.scale.x = scale;

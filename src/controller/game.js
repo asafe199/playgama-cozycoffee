@@ -4,9 +4,9 @@ import { lang, tr } from '../model/i18n.js';
 import { RECIPES, ORDER_POOLS } from '../model/recipes.js';
 import { LEVELS, SLOT_SETS } from '../model/levels.js';
 import { G, P, DAY, level, SLOTS, setLevel, skinC, shirtC, hairC, pick } from '../model/state.js';
-import { scene, renderer, camera } from '../view/scene.js';
+import { scene, renderer, camera, setZoom } from '../view/scene.js';
 import { makeItem } from '../view/items.js';
-import { makePerson, animatePerson } from '../view/people.js';
+import { makePerson, animatePerson, dressChef } from '../view/people.js';
 import { applyRoomTheme } from '../view/room.js';
 import {
   stations, machineSt, milkSt, ovenSt, chocoSt, honeySt, ovenGlass, applyStationLevel,
@@ -27,8 +27,8 @@ function setHeld(type) {
     P.heldMesh.position.set(0, 1.05, 0.62);
     player.add(P.heldMesh);
     const names = lang === 'pt'
-      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel' }
-      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey' };
+      ? { cup: 'Copo vazio', milkcup: 'Copo com leite', espresso: 'Espresso', latte: 'Latte', dough: 'Massa', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Croissant de chocolate', honeylatte: 'Honey Latte', wafflehoney: 'Waffle com Mel', honeyespresso: 'Espresso com Mel' }
+      : { cup: 'Empty cup', milkcup: 'Cup with milk', espresso: 'Espresso', latte: 'Latte', dough: 'Dough', croissant: 'Croissant', mocha: 'Mocha', mochalatte: 'Mocha Latte', chococroissant: 'Choco croissant', honeylatte: 'Honey Latte', wafflehoney: 'Waffle with Honey', honeyespresso: 'Honey Espresso' };
     const tag = makeTag(names[type]);
     tag.position.set(0, 2.9, 0);
     tag.scale.set(1.6, 0.45, 1);
@@ -42,6 +42,8 @@ function applyLevel(n) {
   setLevel(n);
   applyRoomTheme(n);
   applyStationLevel(n);
+  dressChef(player, n >= 4);
+  setZoom(n >= 4 ? 9.6 : 8.2, n >= 4 ? 0 : -1.4);
   refreshGuide();
 }
 
@@ -226,14 +228,14 @@ function interact(s) {
     }
     case 'honey': {
       const d = s.data;
-      if (!d.state && ['latte', 'croissant'].includes(h)) {
+      if (!d.state && ['latte', 'croissant', ...(level >= 4 ? ['espresso'] : [])].includes(h)) {
         d.item = h;
         setHeld(null);
         d.state = 'dipping'; d.t = 0;
         s.cupSlot.add(makeItem(h));
         say('Adicionando mel…');
-      } else if (!d.state && ['honeylatte', 'wafflehoney'].includes(h)) {
-        d.item = { honeylatte: 'latte', wafflehoney: 'croissant' }[h];
+      } else if (!d.state && ['honeylatte', 'wafflehoney', 'honeyespresso'].includes(h)) {
+        d.item = { honeylatte: 'latte', wafflehoney: 'croissant', honeyespresso: 'espresso' }[h];
         s.cupSlot.add(makeItem(h));
         d.state = 'done'; d.t = 0;
         setHeld(null);
@@ -241,9 +243,9 @@ function interact(s) {
       } else if (d.state === 'done' && !h) {
         s.cupSlot.remove(s.cupSlot.children[0]);
         d.state = null; s.bar.visible = false;
-        setHeld({ latte: 'honeylatte', croissant: 'wafflehoney' }[d.item]);
+        setHeld({ latte: 'honeylatte', croissant: 'wafflehoney', espresso: 'honeyespresso' }[d.item]);
         say('Pronto! Entregue no prato do cliente.');
-      } else if (!d.state) say('Mel precisa de latte ou croissant na mão.');
+      } else if (!d.state) say('Mel precisa de latte, croissant (ou espresso no nível 4) na mão.');
       break;
     }
     case 'serve': {
@@ -304,7 +306,7 @@ function updateStation(s, dt, doneAt) {
     if (d.t >= doneAt) {
       d.state = 'done'; d.t = 0;
       s.cupSlot.remove(s.cupSlot.children[0]);
-      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', croissant: 'wafflehoney' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
+      s.cupSlot.add(makeItem(s.key === 'choco' ? { espresso: 'mocha', latte: 'mochalatte', croissant: 'chococroissant' }[d.item] : s.key === 'honey' ? { latte: 'honeylatte', croissant: 'wafflehoney', espresso: 'honeyespresso' }[d.item] : s.key === 'espresso' ? (d.milk ? 'latte' : 'espresso') : s.key === 'milk' ? 'latte' : 'croissant'));
       say(s.key === 'choco' ? 'Chocolate pronto!' : s.key === 'honey' ? 'Mel pronto!' : s.key === 'espresso' ? 'Espresso pronto!' : s.key === 'milk' ? 'Leite pronto!' : 'Croissant pronto! Pegue no forno.');
     }
   } else if (d.state === 'done') {

@@ -5,6 +5,7 @@ export const lang = String(bridge.platform?.language || 'en').toLowerCase().star
 const EN = {
   'Café Noir': 'Noir Café',
   'Café Dourado': 'Golden Café',
+  'Café Royal': 'Royal Café',
   'Pegue um copo, passe na máquina e entregue o pedido certo!': 'Grab a cup, use the machine and serve the right order!',
   'Expediente concluído! 🌟': 'Shift complete! 🌟',
   'Game over 💥': 'Game over 💥',

@@ -97,3 +97,9 @@ Nada foi publicado ainda. Requisitos do checklist ainda em aberto:
 - Remover o dropdown de testes.
 
 Fluxo de publicação (após aprovação): `get_game_checklist` → `create_application` (título em inglês) → `npx vite build` → zip do conteúdo de `dist/` → upload e polling do status → 3 capas (quadrada, retrato, paisagem) → `update_application_form` → `publish_sandbox` → link público.
+
+## Atualização: níveis 3 e 4
+
+- **Nível 3 (Café Dourado):** máquinas deluxe, estação de Mel, 7 clientes, 5 corações, fileira de mesas e porta dourada.
+- **Nível 4 (Café Royal):** sala maior (mais profundidade, câmera com zoom out), 8 clientes simultâneos, 6 corações, novo pedido **Honey Espresso** (Espresso → Mel), chef com traje elegante (jaqueta preta com detalhes dourados, gravata-borboleta e toque alto), pilares de mármore, topiárias, duas fileiras de mesas e porta real com carpete violeta.
+- O croissant não queima mais no forno.

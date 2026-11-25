@@ -4,9 +4,13 @@ import { white } from './materials.js';
 
 export function makeItem(type) {
   const g = new THREE.Group();
-  if (['cup', 'espresso', 'latte', 'milkcup', 'mocha', 'mochalatte', 'honeylatte'].includes(type)) {
+  if (['cup', 'espresso', 'latte', 'milkcup', 'mocha', 'mochalatte', 'honeylatte', 'honeyespresso'].includes(type)) {
     cyl(0.14, 0.1, 0.2, white, 0, 0.1, 0, g, 16);
     if (type !== 'cup') cyl(0.12, 0.12, 0.02, M(type === 'latte' || type === 'milkcup' ? 0xfdfdfd : type === 'mocha' ? 0x4a2512 : type === 'mochalatte' ? 0xc89a74 : type === 'honeylatte' ? 0xd98c1f : 0x3b2314, { roughness: 0.4 }), 0, 0.2, 0, g, 16);
+    if (type === 'honeyespresso') {
+      cyl(0.145, 0.145, 0.04, M(0xd98c1f, { roughness: 0.3 }), 0, 0.12, 0, g, 16);
+      add(new THREE.SphereGeometry(0.06, 10, 8), M(0xd98c1f, { roughness: 0.3, emissive: 0x5a3a0a }), 0, 0.24, 0, g).scale.y = 0.6;
+    }
     if (type === 'mocha' || type === 'mochalatte' || type === 'honeylatte') {
       add(new THREE.SphereGeometry(0.1, 12, 10), white, 0, 0.27, 0, g).scale.y = 0.7;
       cyl(0.145, 0.145, 0.04, M(type === 'honeylatte' ? 0xd98c1f : 0x4a2512), 0, 0.12, 0, g, 16);

@@ -73,7 +73,7 @@ const greenPlants = [
 ];
 
 const leafMat = M(0xb98a5e, { roughness: 0.5 });
-const doorDecor = [new THREE.Group(), new THREE.Group(), new THREE.Group()];
+const doorDecor = [new THREE.Group(), new THREE.Group(), new THREE.Group(), new THREE.Group()];
 function entranceDoor(x, z) {
   const g = new THREE.Group();
   const postH = 2.7, half = 0.62;
@@ -99,7 +99,7 @@ function entranceDoor(x, z) {
 function buildDoorDecor(postH, half) {
   const gold = M(0xd4af37, { roughness: 0.2, metalness: 0.95 });
   const glow = (c) => new THREE.MeshBasicMaterial({ color: c });
-  const [, d2, d3] = doorDecor;
+  const [, d2, d3, d4] = doorDecor;
   // level 2: neon arch, pink mat, brass push plates
   const neon = noShadow(add(new THREE.TorusGeometry(half + 0.24, 0.035, 8, 40, Math.PI), glow(0xff4fa3), 0, postH, 0.12, d2));
   for (const sx of [-1, 1]) noShadow(cyl(0.035, 0.035, postH, glow(0xff4fa3), sx * (half + 0.24), postH / 2, 0.12, d2, 8));
@@ -117,6 +117,18 @@ function buildDoorDecor(postH, half) {
   }
   box(1.2, 0.03, 2.2, M(0x9b1c2c, { roughness: 0.9 }), 0, 0.03, 1.3, d3);
   for (const sx of [-1, 1]) box(0.05, 0.035, 2.2, gold, sx * 0.62, 0.035, 1.3, d3);
+  // level 4: royal double arch, crystal-lit pillars, violet carpet
+  for (const r of [0.18, 0.34]) add(new THREE.TorusGeometry(half + r, 0.06, 10, 32, Math.PI), gold, 0, postH, 0.12, d4);
+  add(new THREE.OctahedronGeometry(0.2), M(0x8fd8ff, { roughness: 0.1, emissive: 0x2a6a8a }), 0, postH + half + 0.55, 0.12, d4);
+  for (const sx of [-1, 1]) {
+    const cx = sx * (half + 0.55);
+    cyl(0.16, 0.19, 3.2, M(0xf1ece2, { roughness: 0.25 }), cx, 1.6, 0.35, d4, 24);
+    cyl(0.24, 0.24, 0.12, gold, cx, 0.06, 0.35, d4, 20);
+    cyl(0.24, 0.24, 0.12, gold, cx, 3.2, 0.35, d4, 20);
+    noShadow(add(new THREE.SphereGeometry(0.18, 14, 14), glow(0x9fe0ff), cx, 3.5, 0.35, d4));
+  }
+  box(1.3, 0.03, 2.6, M(0x4b2a8a, { roughness: 0.9 }), 0, 0.03, 1.5, d4);
+  for (const sx of [-1, 1]) box(0.05, 0.035, 2.6, gold, sx * 0.67, 0.035, 1.5, d4);
   leafGold = gold;
 }
 let leafGold;
@@ -180,6 +192,53 @@ function cafeTable(x, z, parent = scene) {
   parent.add(g);
 }
 
+// ---------- level 4 ("Café Royal"): bigger hall + decor ----------
+export const bigRoom = new THREE.Group();
+bigRoom.visible = false;
+scene.add(bigRoom);
+for (let i = 0; i < 8; i++) {
+  const m = M(0xd8d3c8, { roughness: 0.3 });
+  floorMats.push(m);
+  box(12, 0.16, 0.5, m, 0, -0.08, 6.5 + i * 0.5, bigRoom, 0.01);
+}
+box(0.3, WH, 4, wallMat, -6.15, WH / 2, 8.0, bigRoom);
+export const extras4 = new THREE.Group();
+extras4.visible = false;
+scene.add(extras4);
+{
+  const cv = document.createElement('canvas');
+  cv.width = 512; cv.height = 160;
+  const c = cv.getContext('2d');
+  c.font = 'bold 64px system-ui, sans-serif';
+  c.textAlign = 'center'; c.textBaseline = 'middle';
+  c.shadowColor = '#7fd0ff'; c.shadowBlur = 28;
+  c.fillStyle = '#eaf6ff';
+  c.fillText(tr('Café Royal').toUpperCase(), 256, 82);
+  const sign = noShadow(add(new THREE.PlaneGeometry(2.7, 0.84), new THREE.MeshBasicMaterial({ map: new THREE.CanvasTexture(cv), transparent: true }), -5.9, 3.0, 4.5, extras4));
+  sign.rotation.y = Math.PI / 2;
+  const goldM = M(0xd4af37, { roughness: 0.2, metalness: 0.9 });
+  const marble = M(0xf1ece2, { roughness: 0.2 });
+  const leaf = M(0x2f7a4a, { roughness: 0.8 });
+  // marble pillars with gold capitals
+  for (const [px, pz] of [[-5.5, 3.2], [-5.5, 10.0], [5.6, 6.2], [5.6, 10.0]]) {
+    cyl(0.28, 0.32, WH - 0.4, marble, px, (WH - 0.4) / 2, pz, extras4, 24);
+    cyl(0.4, 0.4, 0.15, goldM, px, 0.08, pz, extras4, 24);
+    cyl(0.4, 0.4, 0.15, goldM, px, WH - 0.4, pz, extras4, 24);
+  }
+  // topiaries along the left wall
+  for (const tz of [5.8, 7.4, 9.0]) {
+    cyl(0.28, 0.2, 0.5, goldM, -5.4, 0.25, tz, extras4, 16);
+    add(new THREE.SphereGeometry(0.42, 16, 14), leaf, -5.4, 0.95, tz, extras4);
+  }
+  // two staggered rows of tables, no lamps on the tables
+  for (const tx of [-4.5, -1.5, 1.5, 4.5]) cafeTable(tx, 4.3, extras4);
+  for (const tx of [-4.5, -1.5, 1.5, 4.5]) cafeTable(tx, 7.8, extras4);
+  // royal runner and gold rug border
+  const border = noShadow(add(new THREE.TorusGeometry(2.4, 0.05, 8, 64), goldM, 0, 0.05, 1.2, extras4));
+  border.rotation.x = Math.PI / 2;
+  noShadow(box(1.1, 0.02, 8.0, M(0x4b2a8a, { roughness: 0.95 }), 0, 0.03, 4.2, extras4, 0.005));
+}
+
 // ---------- level 3 ("Café Dourado") decor ----------
 export const extras3 = new THREE.Group();
 extras3.visible = false;
@@ -236,7 +295,9 @@ export function applyRoomTheme(n) {
   rugMat.color.setHex(th.rug);
   extras.visible = n === 2;
   extras3.visible = n === 3;
+  extras4.visible = n === 4;
+  bigRoom.visible = n === 4;
   greenPlants.forEach((p) => (p.visible = n === 1));
-  leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22][n - 1]);
+  leafMat.color.setHex([0xb98a5e, 0x1f4a52, 0x5a1a22, 0x2a1850][n - 1]);
   doorDecor.forEach((d, i) => (d.visible = i === n - 1));
 }
