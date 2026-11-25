@@ -1,4 +1,4 @@
-import { playRandomMusic, stopMusic, setHostPaused, setPlatformAudio } from './music.js';
+import { playRandomMusic, stopMusic, setPlatformAudio } from './music.js';
 import * as THREE from 'three';
 import bridge from '@playgama/bridge';
 import { tr, L } from '../model/i18n.js';
@@ -17,6 +17,7 @@ import { profile, loadProfile, submitScore } from '../model/profile.js';
 import { hud, menu, say, renderHud, makeTag, makeBubble, refreshGuide } from '../view/hud.js';
 import { setupInput, keys } from './input.js';
 import { progressionStarted, progressionCompleted, progressionFailed } from './telemetry.js';
+import { setHostPaused, setUserPaused, isUserPaused } from './pause.js';
 
 // ---------- player ----------
 const player = makePerson(0x2f6f8f, 0xf1c27d, 0x2b1d14, true);
@@ -153,6 +154,9 @@ function resetGame() {
   if (G.level === 1) G.total = G.totalServed = 0;
   Object.assign(G, { mode: 'playing', score: 0, time: DAY, hearts: LEVELS[G.level - 1].hearts, nextSpawn: 1, served: 0 });
   setHeld(null);
+  setUserPaused(false);
+  hud.pause.textContent = '⏸️';
+  hud.pause.style.display = 'block';
   playRandomMusic();
   P.pos.set(0, 0, -3.8);
   P.goal = P.pending = null;
@@ -172,6 +176,7 @@ function endGame(win, reason, failKey = 'walkouts') {
   const playedLevel = G.level;
   G.mode = 'over';
   helperBtn.style.display = 'none';
+  hud.pause.style.display = 'none';
   bridge.platform.sendMessage(win ? 'level_completed' : 'level_failed');
   submitScore(profile.nick || L({ pt: 'Jogador', en: 'Player', es: 'Jugador', fr: 'Joueur' }), G.score);
   const isBest = G.score > G.best;
@@ -266,7 +271,7 @@ function nearest() {
 }
 
 function interact(s) {
-  if (G.mode !== 'playing' || !s) return;
+  if (G.mode !== 'playing' || G.paused || !s) return;
   const h = P.held;
   switch (s.key) {
     case 'cups':
@@ -458,7 +463,7 @@ function interact(s) {
 }
 
 function dropHeld() {
-  if (G.mode !== 'playing' || !P.held) return;
+  if (G.mode !== 'playing' || G.paused || !P.held) return;
   setHeld(null);
   say('Item descartado.');
 }
@@ -468,6 +473,8 @@ function goMenu() {
   G.mode = 'over';
   stopMusic();
   helperBtn.style.display = 'none';
+  hud.pause.style.display = 'none';
+  setUserPaused(false);
   hud.overlay.style.display = 'none';
   keys.clear();
   P.goal = P.pending = null;
@@ -630,7 +637,6 @@ function tick() {
 }
 
 bridge.platform.on(bridge.EVENT_NAME.PAUSE_STATE_CHANGED, (p) => {
-  G.paused = !!p;
   setHostPaused(p);
 });
 bridge.platform.on(bridge.EVENT_NAME.AUDIO_STATE_CHANGED, (on) => setPlatformAudio(!!on));

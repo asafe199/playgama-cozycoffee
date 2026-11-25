@@ -7,7 +7,7 @@ import { LEVELS } from '../model/levels.js';
 import { profile } from '../model/profile.js';
 
 const $ = (id) => document.getElementById(id);
-export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), home: $('home'), omenu: $('omenu'), act: $('act'), lvl: $('lvl'), drop: $('drop') };
+export const hud = { score: $('score'), time: $('time'), hearts: $('hearts'), tickets: $('tickets'), msg: $('msg'), overlay: $('overlay'), title: $('ot'), text: $('otxt'), btn: $('obtn'), card: $('card'), icon: $('oicon'), stars: $('ostars'), stats: $('ostats'), next: $('onext'), home: $('home'), omenu: $('omenu'), act: $('act'), lvl: $('lvl'), drop: $('drop'), pause: $('pause') };
 
 export function say(t) { hud.msg.textContent = tr(t); }
 

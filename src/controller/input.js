@@ -6,16 +6,35 @@ import { stations } from '../view/stations.js';
 import { LEVELS } from '../model/levels.js';
 import { L } from '../model/i18n.js';
 import { toggleMute, onMuteChange } from './music.js';
+import { toggleUserPaused } from './pause.js';
 import { G, P, BOUNDS, SLOTS } from '../model/state.js';
 
 const LEVEL_WORD = L({ pt: 'Nível', en: 'Level', es: 'Nivel', fr: 'Niveau' });
+const PAUSED_MSG = L({ pt: '⏸️ Jogo pausado', en: '⏸️ Game paused', es: '⏸️ Juego en pausa', fr: '⏸️ Jeu en pause' });
 
 export const keys = new Set();
 
 export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
+  const pauseBtn = hud.pause;
+  let msgBeforePause = '';
+  const togglePause = () => {
+    if (G.mode !== 'playing') return;
+    const paused = toggleUserPaused();
+    pauseBtn.textContent = paused ? '▶️' : '⏸️';
+    if (paused) {
+      msgBeforePause = hud.msg.textContent;
+      hud.msg.textContent = PAUSED_MSG;
+    } else {
+      hud.msg.textContent = msgBeforePause;
+    }
+  };
+  pauseBtn.addEventListener('pointerdown', (e) => e.stopPropagation());
+  pauseBtn.addEventListener('click', togglePause);
   addEventListener('keydown', (e) => {
     if (e.repeat) return;
     const k = e.key.toLowerCase();
+    if (k === 'p') { togglePause(); return; }
+    if (G.paused) return;
     if (k === 'q' || k === 'x') { dropHeld(); return; }
     if (k === ' ' || k === 'e') { e.preventDefault(); interact(nearest()); return; }
     keys.add(k);
@@ -45,7 +64,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame, goMenu }) {
   const ray = new THREE.Raycaster();
   const floorPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
   const tap = (e) => {
-    if (G.mode !== 'playing') return;
+    if (G.mode !== 'playing' || G.paused) return;
     ray.setFromCamera(new THREE.Vector2((e.clientX / innerWidth) * 2 - 1, -(e.clientY / innerHeight) * 2 + 1), camera);
     for (const h of ray.intersectObjects(scene.children, true)) {
       let o = h.object, vis = true;
