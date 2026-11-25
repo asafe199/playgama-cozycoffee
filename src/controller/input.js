@@ -43,7 +43,7 @@ export function setupInput({ interact, dropHeld, nearest, resetGame }) {
       if (o) {
         const s = stations[o.userData.station];
         P.pending = s;
-        P.goal = new THREE.Vector3(s.key === 'serve' ? SLOTS.reduce((m, x) => (Math.abs(x - h.point.x) < Math.abs(m - h.point.x) ? x : m), SLOTS[1]) : THREE.MathUtils.clamp(s.pos.x, BOUNDS.minX, BOUNDS.maxX), 0, s.key === 'serve' ? -2.4 : s.key === 'waffle' ? -3.0 : -3.9);
+        P.goal = new THREE.Vector3(s.key === 'serve' ? SLOTS.reduce((m, x) => (Math.abs(x - h.point.x) < Math.abs(m - h.point.x) ? x : m), SLOTS[1]) : THREE.MathUtils.clamp(s.key === 'waffle' && G.level >= 4 ? s.pos.x + 0.95 : s.pos.x, BOUNDS.minX, BOUNDS.maxX), 0, s.key === 'serve' ? -2.4 : s.key === 'waffle' ? (G.level >= 4 ? -3.4 : -3.0) : -3.9);
         return;
       }
     }
