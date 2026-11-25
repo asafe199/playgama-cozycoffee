@@ -25,13 +25,54 @@ const WH = 4.6;
 box(12, 1.4, 0.3, brick, 0, 0.7, -6.15);
 box(12, WH - 1.4, 0.3, wallMat, 0, 1.4 + (WH - 1.4) / 2, -6.15);
 box(0.3, WH, 12, wallMat, -6.15, WH / 2, 0);
-for (let k = 0; k < 2; k++) {
-  const z = -2.2 + k * 3.6;
-  box(0.1, 2.5, 3.1, black, -6.0, 2.5, z, scene, 0.02);
-  noShadow(add(new THREE.PlaneGeometry(2.9, 2.3), new THREE.MeshBasicMaterial({ color: 0xcfeaf7 }), -5.93, 2.5, z)).rotation.y = Math.PI / 2;
-  noShadow(box(0.04, 2.3, 0.05, black, -5.92, 2.5, z));
-  noShadow(box(0.04, 0.05, 2.9, black, -5.92, 2.5, z));
-}
+// left-wall windows: level 1 is rectangular, levels 2-5 each get their own shape
+const WIN_Z = [-2.2, 1.4], WIN_Y = 2.5;
+const glassFace = new THREE.MeshBasicMaterial({ color: 0xcfeaf7, side: THREE.DoubleSide });
+const WIN_SHAPES = [
+  null,
+  { // arched
+    path: (d) => { const w = 1.4 - d, b = -1.2 + d, s = new THREE.Shape(); s.moveTo(-w, b); s.lineTo(w, b); s.lineTo(w, 0.2); s.absarc(0, 0.2, w, 0, Math.PI, false); s.lineTo(-w, b); return s; },
+    bars: { v: [-1.08, 1.45], h: 1.28 },
+  },
+  { // round
+    path: (d) => { const s = new THREE.Shape(); s.absarc(0, 0, 1.35 - d, 0, Math.PI * 2, false); return s; },
+    bars: { v: [-1.22, 1.22], h: 1.22 },
+  },
+  { // hexagonal
+    path: (d) => { const r = 1.5 - d * 1.15, s = new THREE.Shape(); for (let i = 0; i < 6; i++) { const a = (i * Math.PI) / 3; s[i ? 'lineTo' : 'moveTo'](Math.cos(a) * r, Math.sin(a) * r * 0.87); } s.closePath(); return s; },
+    bars: { v: [-1.14, 1.14], h: 1.3 },
+  },
+  { // pointed gothic arch
+    path: (d) => { const w = 1.2 - d, b = -1.3 + d, t = 1.7 - d * 1.4, s = new THREE.Shape(); s.moveTo(-w, b); s.lineTo(w, b); s.lineTo(w, 0.4); s.quadraticCurveTo(w, 1.2, 0, t); s.quadraticCurveTo(-w, 1.2, -w, 0.4); s.lineTo(-w, b); return s; },
+    bars: { v: [-1.18, 1.5], h: 1.07 },
+  },
+];
+const windowSets = WIN_SHAPES.map((def) => {
+  const g = new THREE.Group();
+  scene.add(g);
+  for (const z of WIN_Z) {
+    if (!def) {
+      box(0.1, 2.5, 3.1, black, -6.0, WIN_Y, z, g, 0.02);
+      noShadow(add(new THREE.PlaneGeometry(2.9, 2.3), glassFace, -5.93, WIN_Y, z, g)).rotation.y = Math.PI / 2;
+      noShadow(box(0.04, 2.3, 0.05, black, -5.92, WIN_Y, z, g));
+      noShadow(box(0.04, 0.05, 2.9, black, -5.92, WIN_Y, z, g));
+      continue;
+    }
+    const frame = new THREE.Mesh(new THREE.ExtrudeGeometry(def.path(0), { depth: 0.1, bevelEnabled: false }), black);
+    frame.castShadow = true;
+    frame.rotation.y = -Math.PI / 2;
+    frame.position.set(-5.95, WIN_Y, z);
+    g.add(frame);
+    const pane = noShadow(new THREE.Mesh(new THREE.ShapeGeometry(def.path(0.12)), glassFace));
+    pane.rotation.y = -Math.PI / 2;
+    pane.position.set(-5.93, WIN_Y, z);
+    g.add(pane);
+    const [v0, v1] = def.bars.v;
+    noShadow(box(0.04, v1 - v0, 0.05, black, -5.92, WIN_Y + (v0 + v1) / 2, z, g));
+    noShadow(box(0.04, 0.05, def.bars.h * 2, black, -5.92, WIN_Y, z, g));
+  }
+  return g;
+});
 const baseRug = add(new THREE.CylinderGeometry(2.4, 2.4, 0.03, 48), rugMat, 0, 0.02, 1.2);
 
 
@@ -505,6 +546,7 @@ export function applyRoomTheme(n) {
   top.color.setHex(th.top);
   rugMat.color.setHex(th.rug);
   baseRug.position.x = COUNTER_X[n - 1];
+  windowSets.forEach((g, i) => (g.visible = i === n - 1));
   extras.visible = n === 2;
   extras3.visible = n === 3;
   extras4.visible = n === 4;
