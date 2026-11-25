@@ -43,10 +43,16 @@ Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `np
 - Latte: Copo → Leite (3s, copo fica preso na máquina) → pegar; ou Espresso → Leite.
 - Croissant: Massa → Forno (5s; queima após 6s se não retirado → lixo).
 
-**Receitas extras (nível 2, estação Chocolate, 2,5s)**
+**Receitas extras (desde o nível 2, estação Chocolate, 2,5s)**
 - Mocha: Espresso → Chocolate.
 - Mocha Latte: Latte → Chocolate.
 - Choco Croissant: Croissant → Chocolate.
+
+**Receitas extras (nível 3, estação Doce de Leite, 2,5s)**
+- Doce de Leite Latte: Latte → Doce de Leite.
+- Doce de Leite Croissant: Croissant → Doce de Leite.
+
+No nível 3, os clientes podem pedir qualquer uma das 8 receitas (as 6 dos níveis 1-2 mais as 2 novas de Doce de Leite), não só as novas.
 
 **Servir:** o pedido só é entregue se o cozinheiro estiver diante de um prato com cliente esperando. Prato vazio: aviso e o item é mantido. Item errado no prato de um cliente: perde 1 coração.
 
@@ -54,16 +60,18 @@ Rodar: `npx vite` (dev, porta 5173; `?debug` expõe `window.__cafe`). Build: `np
 
 ## 4. Níveis
 
-| | Nível 1 | Nível 2 |
-|---|---|---|
-| Ambiente | Café aconchegante (madeira clara, tijolo) | "Café Noir": paredes verdes, piso cinza, neon, banquetas, abajur |
-| Clientes simultâneos | 3 | 5 |
-| Spawn | a cada 6–10s | a cada 4–7s |
-| Paciência | 55s | 50s |
-| Pratos | 3 | 6 |
-| Máquinas | básicas | "fancy" (cromo/dourado, cúpula de vidro, forno com visor brilhante, fonte de chocolate) |
+O projeto planejado contém **5 níveis** no total. Atualmente, 3 estão completos:
 
-Ao vencer o nível 1, o botão vira "Próximo nível". O nível liberado é salvo no storage do Bridge (`max_level`), junto com `best_score`.
+| | Nível 1 | Nível 2 | Nível 3 |
+|---|---|---|---|
+| Ambiente | Café aconchegante (madeira clara, tijolo) | "Café Noir": paredes verdes, piso cinza, neon, banquetas, abajur | "Café Dourado": tons quentes, ouro, placa neon, visual sofisticado |
+| Clientes simultâneos | 3 | 5 | 7 |
+| Spawn | a cada 6–10s | a cada 4–7s | a cada 3–5s |
+| Paciência | 55s | 50s | 45s |
+| Pratos | 3 | 6 | 7 |
+| Máquinas | básicas | "fancy" (cromo/dourado, cúpula de vidro, forno com visor brilhante, fonte de chocolate) | "fancy" com nova estação Doce de Leite |
+
+Ao vencer um nível, o botão vira "Próximo nível". O nível liberado é salvo no storage do Bridge (`max_level`), junto com `best_score`.
 Para testes existe um **dropdown de nível** no HUD que reinicia o jogo no nível escolhido (remover antes de publicar).
 
 ## 5. Integração Playgama Bridge
@@ -77,6 +85,7 @@ Inicialização antes do jogo, idioma via plataforma, `best_score`/`max_level` n
 3. Integração do Bridge SDK e build com Vite.
 4. Ajustes por feedback: direção do movimento, etiquetas nas máquinas, painel de receitas, leite com barra de espera, soltar itens, cozinheiro/clientes de frente, pratos no balcão, animação de membros, balões com emoji, corações em vez de perder na hora, clique para andar, regra de entrega no prato certo, correções de pedidos.
 5. Nível 2 (novo ambiente, 5 clientes), novos pratos, máquinas fancy e seletor de nível para testes.
+6. Nível 3 (novo ambiente "Café Dourado", 7 clientes, estação Doce de Leite com 2 receitas, spawn e paciência mais desafiadores).
 
 ## 7. Pendências para publicar na Playgama
 
