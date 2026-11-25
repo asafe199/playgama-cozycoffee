@@ -358,7 +358,7 @@ for (let i = 0; i < 32; i++) {
 for (let i = 0; i < 6; i++) {
   const m = M(0xe7dcd2, { roughness: 0.3 });
   floorMats.push(m);
-  box(18, 0.16, 0.5, m, 3, -0.08, 10.75 + i * 0.5, bigRoom5, 0.01);
+  box(18, 0.16, 0.5, m, 3, -0.08, 10.25 + i * 0.5, bigRoom5, 0.01);
 }
 box(2.4, 1.4, 0.3, brick, 10.8, 0.7, -6.15, bigRoom5);
 box(2.4, WH - 1.4, 0.3, wallMat, 10.8, 1.4 + (WH - 1.4) / 2, -6.15, bigRoom5);
