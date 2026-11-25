@@ -191,25 +191,35 @@ function addDiner(chair, tableParent) {
   p.scale.setScalar(0.92);
   const [lL, lR] = p.userData.legs;
   lL.rotation.x = lR.rotation.x = -1.45;
+  const [aL, aR] = p.userData.arms;
   const cup = new THREE.Group();
-  cyl(0.07, 0.055, 0.12, white, 0, -0.72, 0.08, cup, 12);
-  cyl(0.06, 0.06, 0.02, M(0x5a3825), 0, -0.66, 0.08, cup, 12);
-  p.userData.arms[1].add(cup);
-  p.userData.arms[0].rotation.x = -1.0;
+  cyl(0.07, 0.055, 0.12, white, 0, -0.2, 0.1, cup, 12);
+  cyl(0.06, 0.06, 0.02, M(0x5a3825), 0, -0.14, 0.1, cup, 12);
+  aR.userData.fore.add(cup);
   chair.add(p);
-  diners.push({ p, arm: p.userData.arms[1], root: tableParent, ph: Math.random() * 6.28, rate: 0.5 + Math.random() * 0.4, rest: 2 + Math.random() * 3 });
+  diners.push({ p, head: p.userData.head, aL, aR, root: tableParent, ph: Math.random() * 6.28, rate: 0.6 + Math.random() * 0.5, rest: 2 + Math.random() * 3 });
 }
 
 export function animateDiners(t) {
   for (const d of diners) {
     if (!d.root.visible) continue;
-    // cycle: rest on the table, lift the cup, sip with a slight head-back lean, put it down
-    const c = ((t * d.rate + d.ph) % (d.rest + 3));
-    let lift = 0;
-    if (c > d.rest) lift = Math.sin(((c - d.rest) / 3) * Math.PI);
-    d.arm.rotation.x += ((-1.0 - lift * 1.0) - d.arm.rotation.x) * 0.2;
-    d.p.rotation.x += ((-lift * 0.12) - d.p.rotation.x) * 0.2;
-    d.p.rotation.y = Math.sin(t * 0.4 + d.ph) * 0.08;
+    // cycle: rest, lift cup (shoulder + elbow), sip with head tilted back, set down
+    const c = (t * d.rate + d.ph) % (d.rest + 3.2);
+    const lift = c > d.rest ? Math.sin(((c - d.rest) / 3.2) * Math.PI) : 0;
+    const breathe = Math.sin(t * 1.6 + d.ph) * 0.02;
+    const rot = (o, ax, v) => { o.rotation[ax] += (v - o.rotation[ax]) * 0.15; };
+    rot(d.aR, 'x', -0.55 - lift * 0.5 + breathe);
+    rot(d.aR.userData.fore, 'x', -1.0 - lift * 1.15);
+    rot(d.aR, 'z', -0.05);
+    // free hand rests on the table, with a small tap
+    rot(d.aL, 'x', -0.7 + Math.sin(t * 2.2 + d.ph) * 0.04);
+    rot(d.aL.userData.fore, 'x', -0.9 + Math.max(0, Math.sin(t * 3 + d.ph * 2)) * 0.12);
+    // head: tilts back while sipping, otherwise glances around slowly and nods
+    const glance = Math.sin(t * 0.5 + d.ph) * 0.35 * (1 - lift);
+    rot(d.head, 'y', glance);
+    rot(d.head, 'x', -lift * 0.35 + Math.sin(t * 0.9 + d.ph * 3) * 0.05);
+    rot(d.head, 'z', Math.sin(t * 0.7 + d.ph) * 0.05);
+    rot(d.p, 'x', -lift * 0.08);
   }
 }
 
@@ -229,7 +239,15 @@ function cafeTable(x, z, parent = scene) {
     chair.position.set(Math.cos(a) * 0.85, 0, Math.sin(a) * 0.85);
     chair.rotation.y = Math.atan2(-chair.position.x, -chair.position.z);
     g.add(chair);
-    if (Math.random() < 0.45) addDiner(chair, parent);
+    const diner = Math.random() < 0.45;
+    if (diner) addDiner(chair, parent);
+    if (diner || Math.random() < 0.3) {
+      const cx = Math.cos(a) * 0.3, cz = Math.sin(a) * 0.3;
+      cyl(0.13, 0.1, 0.015, white, cx, 1.03, cz, g, 16);
+      cyl(0.06, 0.05, 0.1, white, cx, 1.09, cz, g, 12);
+      cyl(0.052, 0.052, 0.01, M(0x5a3825), cx, 1.14, cz, g, 12);
+      add(new THREE.TorusGeometry(0.035, 0.012, 6, 10), white, cx + 0.065, 1.09, cz, g);
+    }
   }
   g.position.set(x, 0, z);
   parent.add(g);

@@ -15,9 +15,27 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
   const legL = limb(0.26, 0.75, 0.3, pants, -0.13, 0.75, 0.06);
   const legR = limb(0.26, 0.75, 0.3, pants, 0.13, 0.75, 0.06);
   box(0.7, 0.8, 0.42, shirt, 0, 1.1, 0, g, 0.12);
-  const armL = limb(0.16, 0.7, 0.18, shirt, -0.43, 1.45, 0.07);
-  const armR = limb(0.16, 0.7, 0.18, shirt, 0.43, 1.45, 0.07);
-  add(new THREE.SphereGeometry(0.28, 20, 20), M(skinC, { roughness: 0.6 }), 0, 1.78, 0, g);
+  // arms have an elbow: upper arm + forearm pivot (userData.fore)
+  const arm = (x) => {
+    const pivot = new THREE.Group();
+    pivot.position.set(x, 1.45, 0);
+    box(0.16, 0.36, 0.18, shirt, 0, -0.18, 0, pivot, 0.07);
+    const fore = new THREE.Group();
+    fore.position.y = -0.36;
+    box(0.15, 0.36, 0.17, shirt, 0, -0.18, 0, fore, 0.07);
+    pivot.add(fore);
+    pivot.userData.fore = fore;
+    g.add(pivot);
+    return pivot;
+  };
+  const armL = arm(-0.43);
+  const armR = arm(0.43);
+  // head pivots at the neck (non-chef) so it can nod and turn
+  const head = new THREE.Group();
+  head.position.set(0, 1.5, 0);
+  g.add(head);
+  add(new THREE.SphereGeometry(0.28, 20, 20), M(skinC, { roughness: 0.6 }), 0, chef ? 1.78 : 0.28, 0, chef ? g : head);
+  g.userData.head = head;
   if (chef) {
     const basic = new THREE.Group();
     g.add(basic);
@@ -63,7 +81,7 @@ export function makePerson(shirtC, skinC, hairC, chef = false) {
     g.userData.fancy = fancy;
     g.userData.shirt = shirt;
     g.userData.shirtBase = shirtC;  } else {
-    add(new THREE.SphereGeometry(0.3, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), M(hairC, { roughness: 0.8 }), 0, 1.82, -0.01, g).rotation.x = -0.15;
+    add(new THREE.SphereGeometry(0.3, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), M(hairC, { roughness: 0.8 }), 0, 0.32, -0.01, head).rotation.x = -0.15;
   }
   g.userData.legs = [legL, legR];
   g.userData.arms = [armL, armR];
